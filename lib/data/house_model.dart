@@ -1,5 +1,5 @@
 class HouseModel {
-  final int id;
+  final String id;
   final String kodeRumah;
   final String nomorRumah;
   final String nama;
@@ -27,17 +27,17 @@ class HouseModel {
 
   factory HouseModel.fromJson(Map<String, dynamic> json) {
     return HouseModel(
-      id: json['id'],
-      kodeRumah: json['kode_rumah'],
-      nomorRumah: json['nomor_rumah'],
-      nama: json['nama'],
-      rt: json['rt'],
-      rw: json['rw'],
-      alamatTambahan: json['alamat_tambahan'],
-      latitude: json['latitude'] != null ? (json['latitude'] as num).toDouble() : null,
-      longitude: json['longitude'] != null ? (json['longitude'] as num).toDouble() : null,
+      id: json['id']?.toString() ?? '',
+      kodeRumah: json['kode_rumah']?.toString() ?? '',
+      nomorRumah: json['nomor_rumah']?.toString() ?? '',
+      nama: json['nama']?.toString() ?? '',
+      rt: json['rt']?.toString() ?? '',
+      rw: json['rw']?.toString() ?? '',
+      alamatTambahan: json['alamat_tambahan']?.toString(),
+      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
       aktif: json['aktif'] ?? true,
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'].toString()) : DateTime.now(),
     );
   }
 

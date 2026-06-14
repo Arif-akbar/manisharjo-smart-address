@@ -50,7 +50,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
     try {
       final repo = Provider.of<HouseRepository>(context, listen: false);
       final newHouse = HouseModel(
-        id: 0, // Id is auto generated in DB
+        id: '', // Id is auto generated in DB
         kodeRumah: _kodeController.text.trim(),
         nomorRumah: _nomorController.text.trim(),
         nama: _namaController.text.trim(),
@@ -93,7 +93,6 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
           child: Container(
             constraints: const BoxConstraints(maxWidth: 600),
             child: Card(
-              elevation: 2,
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Form(

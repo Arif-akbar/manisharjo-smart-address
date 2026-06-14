@@ -13,10 +13,10 @@ class VillageMapModel {
 
   factory VillageMapModel.fromJson(Map<String, dynamic> json) {
     return VillageMapModel(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      imageUrl: json['image_url'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      title: json['title']?.toString() ?? '',
+      imageUrl: json['image_url']?.toString() ?? '',
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'].toString()) : DateTime.now(),
     );
   }
 

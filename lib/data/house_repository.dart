@@ -61,7 +61,7 @@ class HouseRepository extends ChangeNotifier {
     }
   }
 
-  Future<void> updateHouse(int id, HouseModel house) async {
+  Future<void> updateHouse(String id, HouseModel house) async {
     _setLoading(true);
     try {
       await _supabase.from(_tableName).update(house.toJson()).eq('id', id);
@@ -73,7 +73,7 @@ class HouseRepository extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteHouse(int id) async {
+  Future<void> deleteHouse(String id) async {
     _setLoading(true);
     try {
       await _supabase.from(_tableName).delete().eq('id', id);

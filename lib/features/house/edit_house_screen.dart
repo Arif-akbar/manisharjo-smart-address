@@ -109,7 +109,6 @@ class _EditHouseScreenState extends State<EditHouseScreen> {
           child: Container(
             constraints: const BoxConstraints(maxWidth: 600),
             child: Card(
-              elevation: 2,
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Form(

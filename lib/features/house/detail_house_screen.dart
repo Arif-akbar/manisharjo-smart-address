@@ -96,8 +96,6 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
               children: [
                 // Info Card
                 Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
@@ -160,8 +158,6 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                 // Map Card
                 if (house.latitude != null && house.longitude != null)
                   Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
                       child: Column(
@@ -242,8 +238,6 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                 
                 // QR Code Actions Card
                 Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Column(

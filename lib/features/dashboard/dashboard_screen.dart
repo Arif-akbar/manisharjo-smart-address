@@ -67,8 +67,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return SizedBox(
       width: 220,
       child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
@@ -207,18 +205,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       runSpacing: 16,
                       alignment: WrapAlignment.start,
                       children: [
-                        _buildStatCard('Total Rumah', '${houses.length}', Icons.home_work, Colors.blue),
-                        _buildStatCard('Total RT', '$totalRT', Icons.map, Colors.orange),
-                        _buildStatCard('Total RW', '$totalRW', Icons.map_outlined, Colors.deepOrange),
-                        _buildStatCard('Rumah Aktif', '${repository.activeHouses}', Icons.check_circle, Colors.green),
-                        _buildStatCard('Belum Lengkap', '$belumLengkap', Icons.location_off, Colors.red),
+                        _buildStatCard('Total Rumah', '${houses.length}', Icons.home_work, const Color(0xFF2980B9)),
+                        _buildStatCard('Total RT', '$totalRT', Icons.map, const Color(0xFFE67E22)),
+                        _buildStatCard('Total RW', '$totalRW', Icons.map_outlined, const Color(0xFFD35400)),
+                        _buildStatCard('Rumah Aktif', '${repository.activeHouses}', Icons.check_circle, const Color(0xFF27AE60)),
+                        _buildStatCard('Belum Lengkap', '$belumLengkap', Icons.location_off, const Color(0xFFE74C3C)),
                       ],
                     ),
                     const SizedBox(height: 24),
                     
                     Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       child: Padding(
                         padding: const EdgeInsets.all(24.0),
                         child: Column(
@@ -228,9 +224,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             const SizedBox(height: 16),
                             Row(
                               children: [
-                                Text('$lokasiLengkap Lengkap', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                                Text('$lokasiLengkap Lengkap', style: const TextStyle(color: Color(0xFF27AE60), fontWeight: FontWeight.bold)),
                                 const Spacer(),
-                                Text('$belumLengkap Belum', style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                                Text('$belumLengkap Belum', style: const TextStyle(color: Color(0xFFE74C3C), fontWeight: FontWeight.bold)),
                               ],
                             ),
                             const SizedBox(height: 8),
@@ -239,8 +235,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               child: LinearProgressIndicator(
                                 value: houses.isEmpty ? 0 : lokasiLengkap / houses.length,
                                 minHeight: 12,
-                                backgroundColor: Colors.red.shade100,
-                                valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+                                backgroundColor: const Color(0xFFFADBD8), // Soft red background
+                                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF27AE60)),
                               ),
                             ),
                           ],
@@ -252,11 +248,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Text('Daftar Rumah', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: const Color(0xFF0F4C81))),
                     const SizedBox(height: 16),
                     Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: SingleChildScrollView(
+                      clipBehavior: Clip.antiAlias,
+                      child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: DataTable(
                             headingRowColor: WidgetStateProperty.resolveWith((states) => Colors.grey.shade100),
@@ -319,7 +312,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             }).toList(),
                           ),
                         ),
-                      ),
+                      
                     ),
                   ],
                 ),
@@ -330,4 +323,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-}
+} 
