@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../data/search_provider.dart';
+import '../../data/house_repository.dart';
 import '../../widgets/custom_search_bar.dart';
 import '../../widgets/house_card.dart';
 
@@ -49,7 +50,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     return CustomSearchBar(
                       controller: _searchController,
                       hintText: 'Masukkan nama warga atau nomor rumah...',
-                      onChanged: (query) => searchProvider.search(query),
+                      onChanged: (query) {
+                        final allHouses = Provider.of<HouseRepository>(context, listen: false).houses;
+                        searchProvider.search(query, allHouses);
+                      },
                       onClear: () {
                         _searchController.clear();
                         searchProvider.clearSearch();
@@ -112,6 +116,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         final house = searchProvider.searchResults[index];
                         return HouseCard(
                           house: house,
+                          searchQuery: searchProvider.currentQuery,
                           onTap: () {
                             context.push('/detail-house', extra: house);
                           },

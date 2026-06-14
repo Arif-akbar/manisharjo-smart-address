@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../data/auth_repository.dart';
 import '../../data/house_model.dart';
 import '../../widgets/custom_map_viewer.dart';
+import 'qr_house_helper.dart';
 
 class DetailHouseScreen extends StatefulWidget {
   final HouseModel house;
@@ -237,6 +238,79 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                       ),
                     ),
                   ),
+                const SizedBox(height: 24),
+                
+                // QR Code Actions Card
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.qr_code, color: Color(0xFF0F4C81)),
+                            const SizedBox(width: 8),
+                            Text(
+                              'QR Code Smart Address',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF0F4C81),
+                                  ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        const Text('Gunakan fitur di bawah ini untuk melihat, mengunduh, atau mencetak stiker QR Code rumah ini.'),
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                final url = '${Uri.base.origin}/house/${house.kodeRumah}';
+                                QrHouseHelper.showQrDialog(context, url, house.kodeRumah);
+                              },
+                              icon: const Icon(Icons.visibility),
+                              label: const Text('Lihat QR'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue.shade50,
+                                foregroundColor: Colors.blue.shade900,
+                              ),
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                final url = '${Uri.base.origin}/house/${house.kodeRumah}';
+                                QrHouseHelper.downloadQr(context, url, house.kodeRumah);
+                              },
+                              icon: const Icon(Icons.download),
+                              label: const Text('Download QR'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green.shade50,
+                                foregroundColor: Colors.green.shade900,
+                              ),
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                final url = '${Uri.base.origin}/house/${house.kodeRumah}';
+                                QrHouseHelper.printQrSticker(url, house.kodeRumah, house.nama);
+                              },
+                              icon: const Icon(Icons.print),
+                              label: const Text('Cetak QR'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF0F4C81),
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

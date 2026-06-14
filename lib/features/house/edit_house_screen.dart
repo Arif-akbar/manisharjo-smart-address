@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../data/house_model.dart';
 import '../../data/house_repository.dart';
+import 'package:latlong2/latlong.dart';
+import '../../widgets/location_picker_map.dart';
 
 class EditHouseScreen extends StatefulWidget {
   final HouseModel house;
@@ -20,8 +22,7 @@ class _EditHouseScreenState extends State<EditHouseScreen> {
   late TextEditingController _rtController;
   late TextEditingController _rwController;
   late TextEditingController _alamatController;
-  late TextEditingController _latController;
-  late TextEditingController _longController;
+  LatLng? _selectedLocation;
   late bool _aktif;
   bool _isSaving = false;
 
@@ -34,8 +35,9 @@ class _EditHouseScreenState extends State<EditHouseScreen> {
     _rtController = TextEditingController(text: widget.house.rt);
     _rwController = TextEditingController(text: widget.house.rw);
     _alamatController = TextEditingController(text: widget.house.alamatTambahan);
-    _latController = TextEditingController(text: widget.house.latitude?.toString() ?? '');
-    _longController = TextEditingController(text: widget.house.longitude?.toString() ?? '');
+    if (widget.house.latitude != null && widget.house.longitude != null) {
+      _selectedLocation = LatLng(widget.house.latitude!, widget.house.longitude!);
+    }
     _aktif = widget.house.aktif;
   }
 
@@ -47,13 +49,18 @@ class _EditHouseScreenState extends State<EditHouseScreen> {
     _rtController.dispose();
     _rwController.dispose();
     _alamatController.dispose();
-    _latController.dispose();
-    _longController.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (_selectedLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lokasi pada peta wajib dipilih!'), backgroundColor: Colors.red),
+      );
+      return;
+    }
 
     setState(() => _isSaving = true);
     try {
@@ -66,8 +73,8 @@ class _EditHouseScreenState extends State<EditHouseScreen> {
         rt: _rtController.text.trim(),
         rw: _rwController.text.trim(),
         alamatTambahan: _alamatController.text.trim(),
-        latitude: double.tryParse(_latController.text.trim()),
-        longitude: double.tryParse(_longController.text.trim()),
+        latitude: _selectedLocation!.latitude,
+        longitude: _selectedLocation!.longitude,
         aktif: _aktif,
         createdAt: widget.house.createdAt,
       );
@@ -164,25 +171,27 @@ class _EditHouseScreenState extends State<EditHouseScreen> {
                         maxLines: 3,
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _latController,
-                              decoration: const InputDecoration(labelText: 'Latitude (Opsional)', prefixIcon: Icon(Icons.location_searching)),
-                              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _longController,
-                              decoration: const InputDecoration(labelText: 'Longitude (Opsional)', prefixIcon: Icon(Icons.location_searching)),
-                              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Pilih Lokasi Rumah pada Peta (Wajib)',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700),
                       ),
+                      const SizedBox(height: 8),
+                      LocationPickerMap(
+                        initialLocation: _selectedLocation,
+                        onLocationSelected: (location) {
+                          setState(() {
+                            _selectedLocation = location;
+                          });
+                        },
+                      ),
+                      if (_selectedLocation != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            'Koordinat: ${_selectedLocation!.latitude.toStringAsFixed(6)}, ${_selectedLocation!.longitude.toStringAsFixed(6)}',
+                            style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       const SizedBox(height: 16),
                       SwitchListTile(
                         title: const Text('Status Aktif'),

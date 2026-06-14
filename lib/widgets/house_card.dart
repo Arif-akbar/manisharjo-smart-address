@@ -4,12 +4,50 @@ import '../data/house_model.dart';
 class HouseCard extends StatelessWidget {
   final HouseModel house;
   final VoidCallback? onTap;
+  final String? searchQuery;
 
   const HouseCard({
     super.key,
     required this.house,
     this.onTap,
+    this.searchQuery,
   });
+
+  Widget _buildHighlightedText(String text, String? query, BuildContext context, TextStyle? style) {
+    if (query == null || query.isEmpty) return Text(text, style: style);
+
+    final terms = query.toLowerCase().split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+    if (terms.isEmpty) return Text(text, style: style);
+
+    String pattern = terms.map((t) => RegExp.escape(t)).join('|');
+    final regex = RegExp(pattern, caseSensitive: false);
+    final matches = regex.allMatches(text).toList();
+
+    if (matches.isEmpty) return Text(text, style: style);
+
+    List<TextSpan> spans = [];
+    int lastMatchEnd = 0;
+    for (var match in matches) {
+      if (match.start > lastMatchEnd) {
+        spans.add(TextSpan(text: text.substring(lastMatchEnd, match.start)));
+      }
+      spans.add(TextSpan(
+        text: text.substring(match.start, match.end),
+        style: const TextStyle(backgroundColor: Colors.yellow, color: Colors.black, fontWeight: FontWeight.bold),
+      ));
+      lastMatchEnd = match.end;
+    }
+    if (lastMatchEnd < text.length) {
+      spans.add(TextSpan(text: text.substring(lastMatchEnd)));
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: style ?? DefaultTextStyle.of(context).style,
+        children: spans,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,16 +79,20 @@ class HouseCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    _buildHighlightedText(
                       house.nama,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      searchQuery,
+                      context,
+                      Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    _buildHighlightedText(
                       'No. ${house.nomorRumah} | Kode: ${house.kodeRumah}',
-                      style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                      searchQuery,
+                      context,
+                      TextStyle(color: Colors.grey.shade700, fontSize: 13),
                     ),
                     const SizedBox(height: 4),
                     Row(

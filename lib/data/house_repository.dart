@@ -37,6 +37,18 @@ class HouseRepository extends ChangeNotifier {
     }
   }
 
+  Future<HouseModel?> getHouseByKode(String kode) async {
+    try {
+      final response = await _supabase.from(_tableName).select().eq('kode_rumah', kode).maybeSingle();
+      if (response != null) {
+        return HouseModel.fromJson(response);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<void> addHouse(HouseModel house) async {
     _setLoading(true);
     try {

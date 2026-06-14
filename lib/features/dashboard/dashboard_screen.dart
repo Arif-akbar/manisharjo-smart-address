@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../data/auth_repository.dart';
 import '../../data/house_model.dart';
 import '../../data/house_repository.dart';
+import 'qr_village_dialog.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -62,12 +63,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+    return SizedBox(
+      width: 220,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      value,
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F4C81)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Data Rumah Manisharjo'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_2),
+            tooltip: 'QR Code Desa',
+            onPressed: () {
+              showDialog(context: context, builder: (_) => const QrVillageDialog());
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.search),
             tooltip: 'Cari Warga/Rumah',
@@ -136,80 +186,142 @@ class _DashboardScreenState extends State<DashboardScreen> {
             );
           }
 
+          final houses = repository.houses;
+          final totalRT = houses.map((h) => h.rt).where((rt) => rt.isNotEmpty).toSet().length;
+          final totalRW = houses.map((h) => h.rw).where((rw) => rw.isNotEmpty).toSet().length;
+          final belumLengkap = houses.where((h) => h.latitude == null || h.longitude == null).length;
+          final lokasiLengkap = houses.length - belumLengkap;
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Center(
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 1200),
-                child: Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        headingRowColor: MaterialStateProperty.resolveWith((states) => Colors.grey.shade100),
-                        columns: const [
-                          DataColumn(label: Text('Kode', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('No. Rumah', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('Pemilik / Penghuni', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('RT/RW', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('Status', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('Aksi', style: TextStyle(fontWeight: FontWeight.bold))),
-                        ],
-                        rows: repository.houses.map((house) {
-                          return DataRow(
-                            cells: [
-                              DataCell(Text(house.kodeRumah)),
-                              DataCell(Text(house.nomorRumah)),
-                              DataCell(Text(house.nama)),
-                              DataCell(Text('${house.rt}/${house.rw}')),
-                              DataCell(
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: house.aktif ? Colors.green.shade100 : Colors.red.shade100,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    house.aktif ? 'Aktif' : 'Tidak Aktif',
-                                    style: TextStyle(
-                                      color: house.aktif ? Colors.green.shade800 : Colors.red.shade800,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Dashboard Statistik', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: const Color(0xFF0F4C81))),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 16,
+                      alignment: WrapAlignment.start,
+                      children: [
+                        _buildStatCard('Total Rumah', '${houses.length}', Icons.home_work, Colors.blue),
+                        _buildStatCard('Total RT', '$totalRT', Icons.map, Colors.orange),
+                        _buildStatCard('Total RW', '$totalRW', Icons.map_outlined, Colors.deepOrange),
+                        _buildStatCard('Rumah Aktif', '${repository.activeHouses}', Icons.check_circle, Colors.green),
+                        _buildStatCard('Belum Lengkap', '$belumLengkap', Icons.location_off, Colors.red),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Progress Pemetaan Lokasi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey.shade800)),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Text('$lokasiLengkap Lengkap', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                                const Spacer(),
+                                Text('$belumLengkap Belum', style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: LinearProgressIndicator(
+                                value: houses.isEmpty ? 0 : lokasiLengkap / houses.length,
+                                minHeight: 12,
+                                backgroundColor: Colors.red.shade100,
+                                valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
                               ),
-                              DataCell(
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.visibility, color: Colors.teal),
-                                      tooltip: 'Detail',
-                                      onPressed: () => context.push('/detail-house', extra: house),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.edit, color: Colors.blue),
-                                      tooltip: 'Edit',
-                                      onPressed: () => context.push('/edit-house', extra: house),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red),
-                                      tooltip: 'Hapus',
-                                      onPressed: () => _confirmDelete(context, house),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 32),
+
+                    Text('Daftar Rumah', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: const Color(0xFF0F4C81))),
+                    const SizedBox(height: 16),
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            headingRowColor: MaterialStateProperty.resolveWith((states) => Colors.grey.shade100),
+                            columns: const [
+                              DataColumn(label: Text('Kode', style: TextStyle(fontWeight: FontWeight.bold))),
+                              DataColumn(label: Text('No. Rumah', style: TextStyle(fontWeight: FontWeight.bold))),
+                              DataColumn(label: Text('Pemilik / Penghuni', style: TextStyle(fontWeight: FontWeight.bold))),
+                              DataColumn(label: Text('RT/RW', style: TextStyle(fontWeight: FontWeight.bold))),
+                              DataColumn(label: Text('Status', style: TextStyle(fontWeight: FontWeight.bold))),
+                              DataColumn(label: Text('Aksi', style: TextStyle(fontWeight: FontWeight.bold))),
+                            ],
+                            rows: repository.houses.map((house) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(Text(house.kodeRumah)),
+                                  DataCell(Text(house.nomorRumah)),
+                                  DataCell(Text(house.nama)),
+                                  DataCell(Text('${house.rt}/${house.rw}')),
+                                  DataCell(
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: house.aktif ? Colors.green.shade100 : Colors.red.shade100,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        house.aktif ? 'Aktif' : 'Tidak Aktif',
+                                        style: TextStyle(
+                                          color: house.aktif ? Colors.green.shade800 : Colors.red.shade800,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.visibility, color: Colors.teal),
+                                          tooltip: 'Detail',
+                                          onPressed: () => context.push('/detail-house', extra: house),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.edit, color: Colors.blue),
+                                          tooltip: 'Edit',
+                                          onPressed: () => context.push('/edit-house', extra: house),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete, color: Colors.red),
+                                          tooltip: 'Hapus',
+                                          onPressed: () => _confirmDelete(context, house),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

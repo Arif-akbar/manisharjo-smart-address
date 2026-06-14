@@ -18,29 +18,68 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Sistem Informasi Alamat Cerdas Desa Manisharjo.">
 
-  <!-- iOS meta tags & icons -->
+  <!-- PWA Meta tags -->
+  <meta name="theme-color" content="#0F4C81">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="manisharjo_smart_address">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Smart Address">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>manisharjo_smart_address</title>
+  <title>Manisharjo Smart Address</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      background-color: #0F4C81;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .splash {
+      text-align: center;
+    }
+    .splash img {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 24px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .splash h2 {
+      margin: 0 0 24px 0;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <div id="loading" class="splash">
+    <img src="icons/Icon-192.png" alt="Smart Address Logo" />
+    <h2>Smart Address</h2>
+    <div class="loader"></div>
+  </div>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

@@ -11,6 +11,7 @@ import '../features/search/search_screen.dart';
 import '../features/public/landing_screen.dart';
 import '../features/map/admin_map_screen.dart';
 import '../features/map/public_map_screen.dart';
+import '../features/house/public_detail_house_screen.dart';
 import '../data/house_model.dart';
 
 class AppRouter {
@@ -81,6 +82,13 @@ class AppRouter {
         GoRoute(
           path: '/public-map',
           builder: (context, state) => const PublicMapScreen(),
+        ),
+        GoRoute(
+          path: '/house/:kode',
+          builder: (context, state) {
+            final kode = state.pathParameters['kode'] ?? '';
+            return PublicDetailHouseScreen(kodeRumah: kode);
+          },
         ),
       ],
     );
