@@ -1,0 +1,36 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # Menjalankan script setiap hari Senin, Rabu, dan Jumat pada jam 00:00 UTC
+    - cron: '0 0 * * 1,3,5'
+  workflow_dispatch: # Memungkinkan script untuk dijalankan secara manual kapan saja
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "Memulai ping ke Supabase untuk mencegah mode pause (beku)..."
+          
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Error: Secrets SUPABASE_URL atau SUPABASE_ANON_KEY belum diatur di repositori GitHub."
+            echo "Silakan tambahkan di repositori GitHub Anda: Settings -> Secrets and variables -> Actions"
+            exit 1
+          fi
+          
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            "$SUPABASE_URL/rest/v1/houses?select=id&limit=1")
+          
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "Sukses: Berhasil melakukan ping ke Supabase (Status: $HTTP_STATUS)"
+          else
+            echo "Gagal: Ping ke Supabase mengembalikan status $HTTP_STATUS"
+            exit 1
+          fi
