@@ -1,0 +1,221 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../data/auth_repository.dart';
+import '../../data/house_model.dart';
+import '../../data/house_repository.dart';
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh data when dashboard is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<HouseRepository>(context, listen: false).fetchHouses();
+    });
+  }
+
+  Future<void> _confirmDelete(BuildContext context, HouseModel house) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Hapus Rumah'),
+          content: Text('Apakah Anda yakin ingin menghapus data rumah ${house.nama} (${house.kodeRumah})?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Hapus'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true && context.mounted) {
+      try {
+        await Provider.of<HouseRepository>(context, listen: false).deleteHouse(house.id);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Data berhasil dihapus'), backgroundColor: Colors.green),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal menghapus: $e'), backgroundColor: Colors.red),
+          );
+        }
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Data Rumah Manisharjo'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Cari Warga/Rumah',
+            onPressed: () {
+              context.push('/search');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Muat Ulang',
+            onPressed: () {
+              Provider.of<HouseRepository>(context, listen: false).fetchHouses();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.map_outlined),
+            tooltip: 'Kelola Denah Desa',
+            onPressed: () {
+              context.push('/admin-map');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Keluar',
+            onPressed: () async {
+              final authRepo = Provider.of<AuthRepository>(context, listen: false);
+              await authRepo.logout();
+            },
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push('/add-house'),
+        icon: const Icon(Icons.add),
+        label: const Text('Tambah Rumah'),
+        backgroundColor: const Color(0xFF0F4C81),
+        foregroundColor: Colors.white,
+      ),
+      body: Consumer<HouseRepository>(
+        builder: (context, repository, child) {
+          if (repository.isLoading && repository.houses.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (repository.errorMessage != null && repository.houses.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(repository.errorMessage!, style: const TextStyle(color: Colors.red)),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => repository.fetchHouses(),
+                    child: const Text('Coba Lagi'),
+                  )
+                ],
+              ),
+            );
+          }
+
+          if (repository.houses.isEmpty) {
+            return const Center(
+              child: Text('Belum ada data rumah.'),
+            );
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Center(
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 1200),
+                child: Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        headingRowColor: MaterialStateProperty.resolveWith((states) => Colors.grey.shade100),
+                        columns: const [
+                          DataColumn(label: Text('Kode', style: TextStyle(fontWeight: FontWeight.bold))),
+                          DataColumn(label: Text('No. Rumah', style: TextStyle(fontWeight: FontWeight.bold))),
+                          DataColumn(label: Text('Pemilik / Penghuni', style: TextStyle(fontWeight: FontWeight.bold))),
+                          DataColumn(label: Text('RT/RW', style: TextStyle(fontWeight: FontWeight.bold))),
+                          DataColumn(label: Text('Status', style: TextStyle(fontWeight: FontWeight.bold))),
+                          DataColumn(label: Text('Aksi', style: TextStyle(fontWeight: FontWeight.bold))),
+                        ],
+                        rows: repository.houses.map((house) {
+                          return DataRow(
+                            cells: [
+                              DataCell(Text(house.kodeRumah)),
+                              DataCell(Text(house.nomorRumah)),
+                              DataCell(Text(house.nama)),
+                              DataCell(Text('${house.rt}/${house.rw}')),
+                              DataCell(
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: house.aktif ? Colors.green.shade100 : Colors.red.shade100,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    house.aktif ? 'Aktif' : 'Tidak Aktif',
+                                    style: TextStyle(
+                                      color: house.aktif ? Colors.green.shade800 : Colors.red.shade800,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.visibility, color: Colors.teal),
+                                      tooltip: 'Detail',
+                                      onPressed: () => context.push('/detail-house', extra: house),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.edit, color: Colors.blue),
+                                      tooltip: 'Edit',
+                                      onPressed: () => context.push('/edit-house', extra: house),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      tooltip: 'Hapus',
+                                      onPressed: () => _confirmDelete(context, house),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
