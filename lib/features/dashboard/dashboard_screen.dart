@@ -76,7 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 28),
@@ -259,7 +259,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: DataTable(
-                            headingRowColor: MaterialStateProperty.resolveWith((states) => Colors.grey.shade100),
+                            headingRowColor: WidgetStateProperty.resolveWith((states) => Colors.grey.shade100),
                             columns: const [
                               DataColumn(label: Text('Kode', style: TextStyle(fontWeight: FontWeight.bold))),
                               DataColumn(label: Text('No. Rumah', style: TextStyle(fontWeight: FontWeight.bold))),

@@ -63,7 +63,7 @@ class PublicMapScreen extends StatelessWidget {
             ),
           );
         },
-        backgroundColor: Colors.white.withOpacity(0.2),
+        backgroundColor: Colors.white.withValues(alpha: 0.2),
         foregroundColor: Colors.white,
         elevation: 0,
         child: const Icon(Icons.help_outline),

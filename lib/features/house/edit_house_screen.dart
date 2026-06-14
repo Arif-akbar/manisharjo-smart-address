@@ -198,7 +198,7 @@ class _EditHouseScreenState extends State<EditHouseScreen> {
                         subtitle: const Text('Rumah dihuni dan aktif dalam sistem'),
                         value: _aktif,
                         onChanged: (val) => setState(() => _aktif = val),
-                        activeColor: const Color(0xFF0F4C81),
+                        activeThumbColor: const Color(0xFF0F4C81),
                       ),
                       const SizedBox(height: 32),
                       SizedBox(

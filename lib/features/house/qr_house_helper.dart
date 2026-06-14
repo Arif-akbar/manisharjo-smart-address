@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_web_libraries_in_flutter, deprecated_member_use
 import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -15,8 +16,8 @@ class QrHouseHelper {
       if (qrValidationResult.status == QrValidationStatus.valid) {
         final painter = QrPainter.withQr(
           qr: qrValidationResult.qrCode!,
-          color: const Color(0xFF000000),
-          emptyColor: const Color(0xFFFFFFFF),
+          eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: Color(0xFF000000)),
+          dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color(0xFF000000)),
           gapless: true,
         );
         final picData = await painter.toImageData(2048, format: ui.ImageByteFormat.png);
@@ -55,8 +56,8 @@ class QrHouseHelper {
       if (qrValidationResult.status == QrValidationStatus.valid) {
         final painter = QrPainter.withQr(
           qr: qrValidationResult.qrCode!,
-          color: const Color(0xFF000000),
-          emptyColor: const Color(0xFFFFFFFF),
+          eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: Color(0xFF000000)),
+          dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color(0xFF000000)),
           gapless: true,
         );
         final picData = await painter.toImageData(1024, format: ui.ImageByteFormat.png);
@@ -66,73 +67,71 @@ class QrHouseHelper {
           final dataUrl = 'data:image/png;base64,$base64String';
           
           final printWindow = html.window.open('', 'Print QR');
-          if (printWindow != null) {
-            final dynamic win = printWindow;
-            win.document.write('''
-              <html>
-                <head>
-                  <title>Cetak QR - $kodeRumah</title>
-                  <style>
-                    body {
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      height: 100vh;
-                      margin: 0;
-                      font-family: Arial, sans-serif;
-                    }
-                    .sticker {
-                      width: 8cm;
-                      height: 8cm;
-                      border: 2px dashed #ccc;
-                      padding: 1cm;
-                      display: flex;
-                      flex-direction: column;
-                      align-items: center;
-                      justify-content: center;
-                      text-align: center;
-                      box-sizing: border-box;
-                    }
-                    img {
-                      width: 5cm;
-                      height: 5cm;
-                      margin-bottom: 0.5cm;
-                    }
-                    .title {
-                      font-size: 16pt;
-                      font-weight: bold;
-                      margin: 0;
-                    }
-                    .subtitle {
-                      font-size: 12pt;
-                      color: #555;
-                      margin-top: 4px;
-                    }
-                    @media print {
-                      .sticker { border: none; }
-                    }
-                  </style>
-                </head>
-                <body>
-                  <div class="sticker">
-                    <img src="$dataUrl" />
-                    <p class="title">SMART ADDRESS</p>
-                    <p class="subtitle">Rumah $nama ($kodeRumah)</p>
-                  </div>
-                  <script>
-                    window.onload = function() {
-                      setTimeout(function() {
-                        window.print();
-                        window.close();
-                      }, 500);
-                    };
-                  </script>
-                </body>
-              </html>
-            ''');
-            win.document.close();
-          }
-        }
+          final dynamic win = printWindow;
+          win.document.write('''
+            <html>
+              <head>
+                <title>Cetak QR - $kodeRumah</title>
+                <style>
+                  body {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                  }
+                  .sticker {
+                    width: 8cm;
+                    height: 8cm;
+                    border: 2px dashed #ccc;
+                    padding: 1cm;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    box-sizing: border-box;
+                  }
+                  img {
+                    width: 5cm;
+                    height: 5cm;
+                    margin-bottom: 0.5cm;
+                  }
+                  .title {
+                    font-size: 16pt;
+                    font-weight: bold;
+                    margin: 0;
+                  }
+                  .subtitle {
+                    font-size: 12pt;
+                    color: #555;
+                    margin-top: 4px;
+                  }
+                  @media print {
+                    .sticker { border: none; }
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="sticker">
+                  <img src="$dataUrl" />
+                  <p class="title">SMART ADDRESS</p>
+                  <p class="subtitle">Rumah $nama ($kodeRumah)</p>
+                </div>
+                <script>
+                  window.onload = function() {
+                    setTimeout(function() {
+                      window.print();
+                      window.close();
+                    }, 500);
+                  };
+                </script>
+              </body>
+            </html>
+          ''');
+          win.document.close();
+                }
       }
     } catch (e) {
       // Ignore

@@ -71,7 +71,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.account_balance, size: 80, color: Colors.white),
@@ -92,7 +92,7 @@ class _LandingScreenState extends State<LandingScreen> {
                         'Kemudahan akses informasi letak geospasial rumah, navigasi, dan data statistik warga yang terintegrasi secara digital.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 18,
                         ),
                       ),
@@ -184,9 +184,9 @@ class _LandingScreenState extends State<LandingScreen> {
                       Container(
                         padding: const EdgeInsets.all(32),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0F4C81).withOpacity(0.05),
+                          color: const Color(0xFF0F4C81).withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFF0F4C81).withOpacity(0.1)),
+                          border: Border.all(color: const Color(0xFF0F4C81).withValues(alpha: 0.1)),
                         ),
                         child: Column(
                           children: [
@@ -262,7 +262,7 @@ class _LandingScreenState extends State<LandingScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

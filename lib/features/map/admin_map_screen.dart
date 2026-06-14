@@ -47,10 +47,10 @@ class _AdminMapScreenState extends State<AdminMapScreen> {
     if (title == null || title.trim().isEmpty) title = 'Denah Desa';
 
     if (!mounted) return;
+    final repo = Provider.of<VillageMapRepository>(context, listen: false);
     try {
       final bytes = await image.readAsBytes();
-      await Provider.of<VillageMapRepository>(context, listen: false)
-          .uploadMap(title, bytes, image.name);
+      await repo.uploadMap(title, bytes, image.name);
           
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

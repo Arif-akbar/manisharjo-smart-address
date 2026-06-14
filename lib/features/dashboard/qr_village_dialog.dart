@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_web_libraries_in_flutter, deprecated_member_use
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,8 +33,8 @@ class _QrVillageDialogState extends State<QrVillageDialog> {
         final qrCode = qrValidationResult.qrCode!;
         final painter = QrPainter.withQr(
           qr: qrCode,
-          color: const Color(0xFF000000),
-          emptyColor: const Color(0xFFFFFFFF),
+          eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: Color(0xFF000000)),
+          dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color(0xFF000000)),
           gapless: true,
         );
         
@@ -42,7 +43,7 @@ class _QrVillageDialogState extends State<QrVillageDialog> {
           final bytes = picData.buffer.asUint8List();
           final blob = html.Blob([bytes]);
           final url = html.Url.createObjectUrlFromBlob(blob);
-          final anchor = html.AnchorElement(href: url)
+          html.AnchorElement(href: url)
             ..setAttribute('download', 'qrcode_desa_manisharjo.png')
             ..click();
           html.Url.revokeObjectUrl(url);

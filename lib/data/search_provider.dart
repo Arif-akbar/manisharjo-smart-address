@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'house_model.dart';
 
 class SearchProvider extends ChangeNotifier {
-  final _supabase = Supabase.instance.client;
-  final String _tableName = 'houses';
 
   List<HouseModel> _searchResults = [];
   bool _isLoading = false;

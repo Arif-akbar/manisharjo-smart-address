@@ -109,7 +109,7 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                               width: 60,
                               height: 60,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF0F4C81).withOpacity(0.1),
+                                color: const Color(0xFF0F4C81).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Center(
