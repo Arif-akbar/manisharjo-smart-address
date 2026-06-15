@@ -85,42 +85,74 @@ class _QrVillageDialogState extends State<QrVillageDialog> {
       title: const Text('QR Code Desa', textAlign: TextAlign.center),
       content: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text('Scan QR Code ini untuk membuka website desa', textAlign: TextAlign.center),
-          const SizedBox(height: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'Scan QR Code ini untuk membuka website desa', 
+              textAlign: TextAlign.center,
+              style: TextStyle(height: 1.4),
+            ),
+          ),
+          const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), width: 1.5),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              ]
             ),
             // Use the cached QR widget here
             child: _cachedQrWidget,
           ),
-          const SizedBox(height: 16),
-          Text(
-            _villageUrl, 
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-            textAlign: TextAlign.center,
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              _villageUrl, 
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, letterSpacing: 0.5),
+              textAlign: TextAlign.center,
+            ),
           ),
         ],
       ),
       actionsAlignment: MainAxisAlignment.center,
+      actionsPadding: const EdgeInsets.only(bottom: 24, left: 24, right: 24, top: 16),
       actions: [
-        OutlinedButton.icon(
-          onPressed: _copyUrl,
-          icon: const Icon(Icons.copy),
-          label: const Text('Copy URL'),
-        ),
-        ElevatedButton.icon(
-          onPressed: _downloadQrCode,
-          icon: const Icon(Icons.download),
-          label: const Text('Download QR'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-          ),
+        Wrap(
+          spacing: 16,
+          runSpacing: 12,
+          alignment: WrapAlignment.center,
+          children: [
+            OutlinedButton.icon(
+              onPressed: _copyUrl,
+              icon: const Icon(Icons.copy),
+              label: const Text('Copy URL'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              ),
+            ),
+            ElevatedButton.icon(
+              onPressed: _downloadQrCode,
+              icon: const Icon(Icons.download),
+              label: const Text('Download QR'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              ),
+            ),
+          ],
         ),
       ],
     );

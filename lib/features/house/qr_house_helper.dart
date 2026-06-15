@@ -189,13 +189,17 @@ class QrHouseHelper {
         title: Text('QR Code - $kodeRumah', textAlign: TextAlign.center),
         content: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade300, width: 1.5),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                ]
               ),
               child: QrImageView(
                 data: url,
@@ -204,14 +208,26 @@ class QrHouseHelper {
                 backgroundColor: Colors.white,
               ),
             ),
-            const SizedBox(height: 16),
-            Text(url, style: const TextStyle(color: Colors.blue), textAlign: TextAlign.center),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(url, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, letterSpacing: 0.5), textAlign: TextAlign.center),
+            ),
           ],
         ),
         actionsAlignment: MainAxisAlignment.center,
+        actionsPadding: const EdgeInsets.only(bottom: 24, left: 24, right: 24, top: 16),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            ),
             child: const Text('Tutup'),
           ),
         ],
