@@ -76,7 +76,7 @@ class _LandingScreenState extends State<LandingScreen> {
                         child: const Icon(Icons.account_balance, size: 80, color: Colors.white),
                       ),
                       const SizedBox(height: 32),
-                      const Text(
+                      Text(
                         'Sistem Alamat Digital\nDesa Manisharjo',
                         textAlign: TextAlign.center,
                         style: TextStyle(
