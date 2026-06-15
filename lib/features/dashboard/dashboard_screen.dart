@@ -39,7 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: const Color(0xFFEF4444)),
               child: const Text('Hapus'),
             ),
           ],
@@ -52,13 +52,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         await Provider.of<HouseRepository>(context, listen: false).deleteHouse(house.id);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Data berhasil dihapus'), backgroundColor: Colors.green),
+            const SnackBar(content: Text('Data berhasil dihapus'), backgroundColor: Color(0xFF22C55E)),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Gagal menghapus: $e'), backgroundColor: Colors.red),
+            SnackBar(content: Text('Gagal menghapus: $e'), backgroundColor: const Color(0xFFEF4444)),
           );
         }
       }
@@ -68,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.1);
-    final titleColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final titleColor = isDark ? Colors.grey.shade400 : Theme.of(context).textTheme.bodyMedium?.color;
     final valueColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
 
     return Card(
@@ -147,6 +147,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onPressed: () async {
               final authRepo = Provider.of<AuthRepository>(context, listen: false);
               await authRepo.logout();
+              if (context.mounted) {
+                context.go('/');
+              }
             },
           ),
         ],
@@ -155,8 +158,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onPressed: () => context.push('/add-house'),
         icon: const Icon(Icons.add),
         label: const Text('Tambah Rumah'),
-        backgroundColor: const Color(0xFF0F4C81),
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: Consumer<HouseRepository>(
         builder: (context, repository, child) {
@@ -169,9 +172,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const Icon(Icons.error_outline, size: 48, color: Color(0xFFEF4444)),
                   const SizedBox(height: 16),
-                  Text(repository.errorMessage!, style: const TextStyle(color: Colors.red)),
+                  Text(repository.errorMessage!, style: const TextStyle(color: Color(0xFFEF4444))),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => repository.fetchHouses(),
@@ -207,8 +210,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     LayoutBuilder(
                       builder: (context, constraints) {
                         int crossAxisCount = 1;
-                        if (constraints.maxWidth >= 1024) crossAxisCount = 4;
-                        else if (constraints.maxWidth >= 600) crossAxisCount = 2;
+                        if (constraints.maxWidth >= 1024) {
+                          crossAxisCount = 4;
+                        } else if (constraints.maxWidth >= 600) {
+                          crossAxisCount = 2;
+                        }
                         
                         return GridView.count(
                           crossAxisCount: crossAxisCount,
@@ -234,7 +240,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Progress Pemetaan Lokasi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey.shade800)),
+                            Text('Progress Pemetaan Lokasi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.bodyLarge?.color)),
                             const SizedBox(height: 16),
                             Row(
                               children: [
@@ -318,7 +324,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           onPressed: () => context.push('/edit-house', extra: house),
                                         ),
                                         IconButton(
-                                          icon: const Icon(Icons.delete, color: Colors.red),
+                                          icon: const Icon(Icons.delete, color: Color(0xFFEF4444)),
                                           tooltip: 'Hapus',
                                           onPressed: () => _confirmDelete(context, house),
                                         ),

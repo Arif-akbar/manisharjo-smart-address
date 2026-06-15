@@ -51,22 +51,22 @@ class CustomMapViewer extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0F4C81),
+                          color: Theme.of(context).colorScheme.primary,
                           borderRadius: BorderRadius.circular(8),
-                          boxShadow: const [
-                            BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+                          boxShadow: [
+                            BoxShadow(color: Theme.of(context).shadowColor, blurRadius: 4, offset: const Offset(0, 2)),
                           ],
                         ),
                         child: Text(
                           markerLabel,
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 10, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const Icon(
                         Icons.location_on,
-                        color: Colors.red,
+                        color: Color(0xFFEF4444),
                         size: 32,
                       ),
                     ],

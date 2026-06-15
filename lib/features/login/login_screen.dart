@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/auth_repository.dart';
 
@@ -35,6 +36,10 @@ class _LoginScreenState extends State<LoginScreen> {
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
+      
+      if (mounted) {
+        context.go('/admin');
+      }
     } on AuthException catch (e) {
       setState(() {
         _errorMessage = e.message;

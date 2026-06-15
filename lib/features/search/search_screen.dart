@@ -73,7 +73,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       return Center(
                         child: Text(
                           searchProvider.errorMessage!,
-                          style: const TextStyle(color: Colors.red),
+                          style: const TextStyle(color: Color(0xFFEF4444)),
                         ),
                       );
                     }
@@ -83,11 +83,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.search, size: 80, color: Colors.grey.shade300),
+                            Icon(Icons.search, size: 80, color: Theme.of(context).dividerColor),
                             const SizedBox(height: 16),
                             Text(
                               'Ketik nama atau nomor rumah untuk mulai mencari',
-                              style: TextStyle(color: Colors.grey.shade600),
+                              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                             ),
                           ],
                         ),
@@ -99,11 +99,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.person_off_outlined, size: 80, color: Colors.grey.shade300),
+                            Icon(Icons.person_off_outlined, size: 80, color: Theme.of(context).dividerColor),
                             const SizedBox(height: 16),
                             Text(
                               'Tidak ada data yang cocok dengan pencarian Anda.',
-                              style: TextStyle(color: Colors.grey.shade600),
+                              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                             ),
                           ],
                         ),

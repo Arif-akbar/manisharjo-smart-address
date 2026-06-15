@@ -96,13 +96,13 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: Colors.grey.shade300),
+                                border: Border.all(color: Theme.of(context).dividerColor),
                               ),
                               child: Text(
                                 house.nomorRumah,
-                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodySmall?.color),
                               ),
                             ),
                             const Icon(
@@ -124,7 +124,7 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
                         border: Border.all(color: theme.colorScheme.surface, width: 2),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
+                            color: Theme.of(context).shadowColor,
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),

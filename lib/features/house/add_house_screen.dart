@@ -180,7 +180,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                         subtitle: const Text('Rumah dihuni dan aktif dalam sistem'),
                         value: _aktif,
                         onChanged: (val) => setState(() => _aktif = val),
-                        activeColor: const Color(0xFF22C55E),
+                        activeThumbColor: const Color(0xFF22C55E),
                       ),
                       const SizedBox(height: 32),
                       SizedBox(

@@ -34,9 +34,9 @@ class DashboardCharts extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildPieChartCard(activeCount, inactiveCount),
+              _buildPieChartCard(context, activeCount, inactiveCount),
               const SizedBox(height: 24),
-              _buildBarChartCard(sortedRtKeys, rtDistribution),
+              _buildBarChartCard(context, sortedRtKeys, rtDistribution),
             ],
           );
         } else {
@@ -46,12 +46,12 @@ class DashboardCharts extends StatelessWidget {
             children: [
               Expanded(
                 flex: 1,
-                child: _buildPieChartCard(activeCount, inactiveCount),
+                child: _buildPieChartCard(context, activeCount, inactiveCount),
               ),
               const SizedBox(width: 24),
               Expanded(
                 flex: 2,
-                child: _buildBarChartCard(sortedRtKeys, rtDistribution),
+                child: _buildBarChartCard(context, sortedRtKeys, rtDistribution),
               ),
             ],
           );
@@ -60,7 +60,7 @@ class DashboardCharts extends StatelessWidget {
     );
   }
 
-  Widget _buildPieChartCard(int activeCount, int inactiveCount) {
+  Widget _buildPieChartCard(BuildContext context, int activeCount, int inactiveCount) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -69,7 +69,7 @@ class DashboardCharts extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Status Rumah', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey.shade800)),
+            Text('Status Rumah', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.bodyLarge?.color)),
             const SizedBox(height: 24),
             SizedBox(
               height: 200,
@@ -111,7 +111,7 @@ class DashboardCharts extends StatelessWidget {
     );
   }
 
-  Widget _buildBarChartCard(List<String> sortedRtKeys, Map<String, int> rtDistribution) {
+  Widget _buildBarChartCard(BuildContext context, List<String> sortedRtKeys, Map<String, int> rtDistribution) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -120,7 +120,7 @@ class DashboardCharts extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Distribusi Rumah per RT', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey.shade800)),
+            Text('Distribusi Rumah per RT', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.bodyLarge?.color)),
             const SizedBox(height: 24),
             SizedBox(
               height: 236, // Match height
@@ -160,7 +160,7 @@ class DashboardCharts extends StatelessWidget {
                           drawVerticalLine: false,
                           horizontalInterval: 5,
                           getDrawingHorizontalLine: (value) {
-                            return FlLine(color: Colors.grey.shade300, strokeWidth: 1);
+                            return FlLine(color: Theme.of(context).dividerColor, strokeWidth: 1);
                           },
                         ),
                         borderData: FlBorderData(show: false),
@@ -170,7 +170,7 @@ class DashboardCharts extends StatelessWidget {
                             barRods: [
                               BarChartRodData(
                                 toY: rtDistribution[sortedRtKeys[index]]!.toDouble(),
-                                color: const Color(0xFF0F4C81),
+                                color: Theme.of(context).colorScheme.primary,
                                 width: 20,
                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                               ),

@@ -58,7 +58,7 @@ class _QrVillageDialogState extends State<QrVillageDialog> {
           
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('QR Code berhasil diunduh'), backgroundColor: Colors.green),
+              const SnackBar(content: Text('QR Code berhasil diunduh'), backgroundColor: Color(0xFF22C55E)),
             );
           }
         }
@@ -66,7 +66,7 @@ class _QrVillageDialogState extends State<QrVillageDialog> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal mengunduh QR Code: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Gagal mengunduh QR Code: $e'), backgroundColor: const Color(0xFFEF4444)),
         );
       }
     }
@@ -75,7 +75,7 @@ class _QrVillageDialogState extends State<QrVillageDialog> {
   void _copyUrl() {
     Clipboard.setData(ClipboardData(text: _villageUrl));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('URL berhasil disalin'), backgroundColor: Colors.green),
+      const SnackBar(content: Text('URL berhasil disalin'), backgroundColor: Color(0xFF22C55E)),
     );
   }
 
@@ -93,7 +93,7 @@ class _QrVillageDialogState extends State<QrVillageDialog> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
+              border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
             ),
             // Use the cached QR widget here
             child: _cachedQrWidget,
@@ -118,8 +118,8 @@ class _QrVillageDialogState extends State<QrVillageDialog> {
           icon: const Icon(Icons.download),
           label: const Text('Download QR'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0F4C81),
-            foregroundColor: Colors.white,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
       ],
