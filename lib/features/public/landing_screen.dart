@@ -22,11 +22,16 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isAuthenticated = Provider.of<AuthRepository>(context).isAuthenticated;
+    final bool isAuthenticated = Provider.of<AuthRepository>(
+      context,
+    ).isAuthenticated;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Smart Address Manisharjo', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Smart Address Manisharjo',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         foregroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
@@ -36,14 +41,18 @@ class _LandingScreenState extends State<LandingScreen> {
               icon: const Icon(Icons.dashboard),
               label: const Text('Dashboard Admin'),
               onPressed: () => context.push('/admin'),
-              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              ),
             )
           else
             TextButton.icon(
               icon: const Icon(Icons.admin_panel_settings),
               label: const Text('Login Admin'),
               onPressed: () => context.push('/login'),
-              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              ),
             ),
           const SizedBox(width: 16),
         ],
@@ -73,7 +82,11 @@ class _LandingScreenState extends State<LandingScreen> {
                           color: Colors.white.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.account_balance, size: 80, color: Colors.white),
+                        child: const Icon(
+                          Icons.account_balance,
+                          size: 80,
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(height: 32),
                       Text(
@@ -81,7 +94,9 @@ class _LandingScreenState extends State<LandingScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: MediaQuery.of(context).size.width < 600 ? 28 : 40,
+                          fontSize: MediaQuery.of(context).size.width < 600
+                              ? 28
+                              : 40,
                           fontWeight: FontWeight.bold,
                           height: 1.2,
                         ),
@@ -100,35 +115,61 @@ class _LandingScreenState extends State<LandingScreen> {
                       GestureDetector(
                         onTap: () => context.push('/search'),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 16,
+                          ),
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: const [
-                              BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5)),
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
                             ],
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.search, color: Theme.of(context).iconTheme.color),
+                              Icon(
+                                Icons.search,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
                               const SizedBox(width: 16),
                               Expanded(
                                 child: Text(
                                   'Cari nama warga atau nomor rumah...',
-                                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: MediaQuery.of(context).size.width < 600 ? 14 : 16),
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall?.color,
+                                    fontSize:
+                                        MediaQuery.of(context).size.width < 600
+                                        ? 14
+                                        : 16,
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.primary,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
                                   'Cari',
-                                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
@@ -159,21 +200,27 @@ class _LandingScreenState extends State<LandingScreen> {
                               _buildStatCard(
                                 context,
                                 title: 'Total Rumah Terdaftar',
-                                count: repo.isLoading ? '...' : repo.totalHouses.toString(),
+                                count: repo.isLoading
+                                    ? '...'
+                                    : repo.totalHouses.toString(),
                                 icon: Icons.home_work_outlined,
                                 color: Colors.blue,
                               ),
                               _buildStatCard(
                                 context,
                                 title: 'Rumah Berpenghuni',
-                                count: repo.isLoading ? '...' : repo.activeHouses.toString(),
+                                count: repo.isLoading
+                                    ? '...'
+                                    : repo.activeHouses.toString(),
                                 icon: Icons.family_restroom,
                                 color: Colors.green,
                               ),
                               _buildStatCard(
                                 context,
                                 title: 'Cakupan Pemetaan',
-                                count: repo.isLoading ? '...' : '${(repo.totalHouses > 0 ? (repo.activeHouses / repo.totalHouses * 100).toInt() : 0)}%',
+                                count: repo.isLoading
+                                    ? '...'
+                                    : '${(repo.totalHouses > 0 ? (repo.activeHouses / repo.totalHouses * 100).toInt() : 0)}%',
                                 icon: Icons.map_outlined,
                                 color: Colors.orange,
                               ),
@@ -186,13 +233,23 @@ class _LandingScreenState extends State<LandingScreen> {
                       Container(
                         padding: const EdgeInsets.all(32),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
+                          border: Border.all(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.1),
+                          ),
                         ),
                         child: Column(
                           children: [
-                            Icon(Icons.map, size: 60, color: Theme.of(context).colorScheme.primary),
+                            Icon(
+                              Icons.map,
+                              size: 60,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                             const SizedBox(height: 16),
                             Text(
                               'Eksplorasi Denah Desa Manisharjo',
@@ -207,18 +264,35 @@ class _LandingScreenState extends State<LandingScreen> {
                             Text(
                               'Lihat denah lengkap desa dari layar Anda. Fitur zoom interaktif tersedia.',
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 16),
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.color,
+                                fontSize: 16,
+                              ),
                             ),
                             const SizedBox(height: 24),
                             ElevatedButton.icon(
                               onPressed: () => context.push('/public-map'),
                               icon: const Icon(Icons.fullscreen),
-                              label: const Text('Lihat Denah Desa', style: TextStyle(fontSize: 18)),
+                              label: const Text(
+                                'Lihat Denah Desa',
+                                style: TextStyle(fontSize: 18),
+                              ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).colorScheme.primary,
-                                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.primary,
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimary,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 20,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
                               ),
                             ),
                           ],
@@ -239,12 +313,17 @@ class _LandingScreenState extends State<LandingScreen> {
                 children: [
                   Text(
                     '© 2026 Katar Freedom Manisharjo.',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Mewujudkan Desa Digital yang Transparan dan Terintegrasi.',
-                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+                    'Mewujudkan Desa Digital dan Terintegrasi.',
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodySmall?.color,
+                    ),
                   ),
                 ],
               ),
@@ -255,7 +334,13 @@ class _LandingScreenState extends State<LandingScreen> {
     );
   }
 
-  Widget _buildStatCard(BuildContext context, {required String title, required String count, required IconData icon, required MaterialColor color}) {
+  Widget _buildStatCard(
+    BuildContext context, {
+    required String title,
+    required String count,
+    required IconData icon,
+    required MaterialColor color,
+  }) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Container(
       width: screenWidth < 350 ? screenWidth - 48 : 300,
