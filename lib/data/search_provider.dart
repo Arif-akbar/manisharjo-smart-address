@@ -35,9 +35,7 @@ class SearchProvider extends ChangeNotifier {
   }
 
   void _performSmartSearch(String query, List<HouseModel> allHouses) {
-    _isLoading = true;
     _errorMessage = null;
-    notifyListeners();
 
     try {
       final results = <_SearchResult>[];
@@ -93,7 +91,6 @@ class SearchProvider extends ChangeNotifier {
       _errorMessage = 'Terjadi kesalahan saat mencari: $e';
       _searchResults = [];
     } finally {
-      _isLoading = false;
       notifyListeners();
     }
   }

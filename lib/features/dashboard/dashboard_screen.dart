@@ -5,6 +5,8 @@ import '../../data/auth_repository.dart';
 import '../../data/house_model.dart';
 import '../../data/house_repository.dart';
 import 'qr_village_dialog.dart';
+import 'dashboard_charts.dart';
+import '../../widgets/skeleton_loader.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -132,7 +134,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.map_outlined),
-            tooltip: 'Kelola Denah Desa',
+            tooltip: 'Lihat Peta Digital',
             onPressed: () {
               context.push('/admin-map');
             },
@@ -157,7 +159,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Consumer<HouseRepository>(
         builder: (context, repository, child) {
           if (repository.isLoading && repository.houses.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const DashboardSkeleton();
           }
 
           if (repository.errorMessage != null && repository.houses.isEmpty) {
@@ -243,6 +245,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    DashboardCharts(houses: houses),
                     const SizedBox(height: 32),
 
                     Text('Daftar Rumah', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: const Color(0xFF0F4C81))),

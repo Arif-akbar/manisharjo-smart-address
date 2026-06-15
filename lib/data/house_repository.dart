@@ -5,6 +5,9 @@ import 'house_model.dart';
 class HouseRepository extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
   final String _tableName = 'houses';
+  
+  // Specific columns to prevent SELECT *
+  final String _selectColumns = 'id, kode_rumah, nomor_rumah, nama, rt, rw, alamat_tambahan, latitude, longitude, aktif, created_at';
 
   List<HouseModel> _houses = [];
   bool _isLoading = false;
@@ -22,10 +25,16 @@ class HouseRepository extends ChangeNotifier {
     fetchHouses();
   }
 
-  Future<void> fetchHouses() async {
+  Future<void> fetchHouses({bool forceRefresh = false}) async {
+    if (!forceRefresh && _houses.isNotEmpty) return; // Cached locally
+
     _setLoading(true);
     try {
-      final response = await _supabase.from(_tableName).select().order('created_at', ascending: false);
+      final response = await _supabase
+          .from(_tableName)
+          .select(_selectColumns)
+          .order('created_at', ascending: false);
+          
       _houses = (response as List).map((e) => HouseModel.fromJson(e)).toList();
       _totalHouses = _houses.length;
       _activeHouses = _houses.where((h) => h.aktif).length;
@@ -38,8 +47,21 @@ class HouseRepository extends ChangeNotifier {
   }
 
   Future<HouseModel?> getHouseByKode(String kode) async {
+    // Try to get from local cache first
     try {
-      final response = await _supabase.from(_tableName).select().eq('kode_rumah', kode).maybeSingle();
+      final localHouse = _houses.firstWhere((h) => h.kodeRumah == kode);
+      return localHouse;
+    } catch (_) {
+      // Not found in cache, fetch from network
+    }
+
+    try {
+      final response = await _supabase
+          .from(_tableName)
+          .select(_selectColumns)
+          .eq('kode_rumah', kode)
+          .maybeSingle();
+          
       if (response != null) {
         return HouseModel.fromJson(response);
       }
@@ -53,7 +75,7 @@ class HouseRepository extends ChangeNotifier {
     _setLoading(true);
     try {
       await _supabase.from(_tableName).insert(house.toJson());
-      await fetchHouses();
+      await fetchHouses(forceRefresh: true);
     } catch (e) {
       _errorMessage = e.toString();
       _setLoading(false);
@@ -65,7 +87,7 @@ class HouseRepository extends ChangeNotifier {
     _setLoading(true);
     try {
       await _supabase.from(_tableName).update(house.toJson()).eq('id', id);
-      await fetchHouses();
+      await fetchHouses(forceRefresh: true);
     } catch (e) {
       _errorMessage = e.toString();
       _setLoading(false);
@@ -77,7 +99,7 @@ class HouseRepository extends ChangeNotifier {
     _setLoading(true);
     try {
       await _supabase.from(_tableName).delete().eq('id', id);
-      await fetchHouses();
+      await fetchHouses(forceRefresh: true);
     } catch (e) {
       _errorMessage = e.toString();
       _setLoading(false);
@@ -86,6 +108,7 @@ class HouseRepository extends ChangeNotifier {
   }
 
   void _setLoading(bool value) {
+    if (_isLoading == value) return; // Prevent unnecessary notifyListeners
     _isLoading = value;
     notifyListeners();
   }

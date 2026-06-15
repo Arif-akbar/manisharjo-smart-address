@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-import '../../data/village_map_repository.dart';
+import 'package:go_router/go_router.dart';
+import '../../data/house_repository.dart';
+import '../../data/house_model.dart';
 
 class AdminMapScreen extends StatefulWidget {
   const AdminMapScreen({super.key});
@@ -11,243 +15,253 @@ class AdminMapScreen extends StatefulWidget {
 }
 
 class _AdminMapScreenState extends State<AdminMapScreen> {
-  final ImagePicker _picker = ImagePicker();
+  final MapController _mapController = MapController();
 
-  Future<void> _uploadNewMap() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image == null) return;
-
-    if (!mounted) return;
-    
-    // Add title prompt
-    String? title = await showDialog<String>(
-      context: context,
-      builder: (context) {
-        final controller = TextEditingController();
-        return AlertDialog(
-          title: const Text('Nama Denah'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(hintText: 'Contoh: Denah Manisharjo 2026'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context, controller.text),
-              child: const Text('Upload'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (title == null || title.trim().isEmpty) title = 'Denah Desa';
-
-    if (!mounted) return;
-    final repo = Provider.of<VillageMapRepository>(context, listen: false);
-    try {
-      final bytes = await image.readAsBytes();
-      await repo.uploadMap(title, bytes, image.name);
-          
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Denah berhasil diunggah!'), backgroundColor: Colors.green),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal mengunggah: $e'), backgroundColor: Colors.red),
-        );
-      }
-    }
-  }
-
-  Future<void> _deleteMap(int id, String imageUrl) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hapus Denah?'),
-        content: const Text('Denah ini akan dihapus secara permanen.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Batal'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Hapus'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm != true || !mounted) return;
-
-    try {
-      await Provider.of<VillageMapRepository>(context, listen: false).deleteMap(id, imageUrl);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Denah berhasil dihapus!'), backgroundColor: Colors.green),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menghapus: $e'), backgroundColor: Colors.red),
-        );
-      }
-    }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<HouseRepository>(context, listen: false).fetchHouses();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manajemen Denah Desa'),
+        title: const Text('Peta Digital Desa (Admin)'),
+        backgroundColor: const Color(0xFF0F4C81),
+        foregroundColor: Colors.white,
       ),
-      body: Consumer<VillageMapRepository>(
+      body: Consumer<HouseRepository>(
         builder: (context, repo, child) {
           if (repo.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (repo.latestMap == null) {
+          final housesWithLocation = repo.houses.where((h) => h.latitude != null && h.longitude != null).toList();
+
+          if (housesWithLocation.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.map_outlined, size: 80, color: Colors.grey),
                   const SizedBox(height: 16),
-                  const Text('Belum ada denah desa yang diunggah.', style: TextStyle(fontSize: 18, color: Colors.grey)),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: _uploadNewMap,
-                    icon: const Icon(Icons.upload),
-                    label: const Text('Unggah Denah Pertama'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0F4C81),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
+                  const Text('Belum ada data rumah dengan koordinat lokasi.', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.push('/admin'),
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F4C81), foregroundColor: Colors.white),
+                    child: const Text('Kembali ke Dashboard'),
                   ),
                 ],
               ),
             );
           }
 
-          final mapData = repo.latestMap!;
+          double sumLat = 0;
+          double sumLng = 0;
+          for (var h in housesWithLocation) {
+            sumLat += h.latitude!;
+            sumLng += h.longitude!;
+          }
+          final center = LatLng(sumLat / housesWithLocation.length, sumLng / housesWithLocation.length);
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Center(
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 800),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Denah Aktif',
-                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF0F4C81),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    ElevatedButton.icon(
-                                      onPressed: _uploadNewMap,
-                                      icon: const Icon(Icons.update),
-                                      label: const Text('Ganti Denah'),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF0F4C81),
-                                        foregroundColor: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    IconButton(
-                                      onPressed: () => _deleteMap(mapData.id, mapData.imageUrl),
-                                      icon: const Icon(Icons.delete),
-                                      color: Colors.red,
-                                      tooltip: 'Hapus Denah',
-                                    ),
-                                  ],
-                                ),
-                              ],
+          return FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: center,
+              initialZoom: 16.0,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.manisharjo.smart_address',
+              ),
+              MarkerClusterLayerWidget(
+                options: MarkerClusterLayerOptions(
+                  maxClusterRadius: 45,
+                  size: const Size(40, 40),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(50),
+                  maxZoom: 15,
+                  markers: housesWithLocation.map((house) {
+                    return Marker(
+                      point: LatLng(house.latitude!, house.longitude!),
+                      width: 50,
+                      height: 50,
+                      alignment: Alignment.topCenter,
+                      child: GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                             ),
-                            const Divider(height: 32),
-                            Text('Judul: ${mapData.title}', style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
-                            const SizedBox(height: 4),
-                            Text('Diupload pada: ${mapData.createdAt.toLocal().toString().split('.')[0]}', style: const TextStyle(color: Colors.grey)),
-                            const SizedBox(height: 24),
+                            builder: (context) => _buildHouseInfoCard(context, house),
+                          );
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
                             Container(
-                              height: 400,
-                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                               decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: Colors.grey.shade300),
                               ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: InteractiveViewer(
-                                  panEnabled: true,
-                                  boundaryMargin: const EdgeInsets.all(20),
-                                  minScale: 0.5,
-                                  maxScale: 4,
-                                  child: Image.network(
-                                    mapData.imageUrl,
-                                    fit: BoxFit.contain,
-                                    loadingBuilder: (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return const Center(child: CircularProgressIndicator());
-                                    },
-                                    errorBuilder: (context, error, stackTrace) => const Center(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.error_outline, color: Colors.red, size: 40),
-                                          SizedBox(height: 8),
-                                          Text('Gagal memuat gambar', style: TextStyle(color: Colors.red)),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                              child: Text(
+                                house.nomorRumah,
+                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                               ),
                             ),
-                            const SizedBox(height: 16),
-                            const Center(
-                              child: Text(
-                                'Gunakan scroll mouse atau cubit layar untuk Zoom In / Zoom Out',
-                                style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
-                              ),
+                            const Icon(
+                              Icons.location_on,
+                              color: Colors.red,
+                              size: 30,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
+                  builder: (context, markers) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: const Color(0xFF0F4C81),
+                        border: Border.all(color: Colors.white, width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          markers.length.toString(),
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            ),
+            ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildHouseInfoCard(BuildContext context, HouseModel house) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  house.nama,
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: house.aktif ? Colors.green.shade100 : Colors.red.shade100,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  house.aktif ? 'Aktif' : 'Kosong',
+                  style: TextStyle(
+                    color: house.aktif ? Colors.green.shade800 : Colors.red.shade800,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Kode: ${house.kodeRumah}',
+            style: const TextStyle(color: Colors.grey, fontSize: 16),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Icon(Icons.home, color: Colors.grey, size: 20),
+              const SizedBox(width: 8),
+              Text('Nomor: ${house.nomorRumah}', style: const TextStyle(fontSize: 16)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.map, color: Colors.grey, size: 20),
+              const SizedBox(width: 8),
+              Text('RT ${house.rt} / RW ${house.rw}', style: const TextStyle(fontSize: 16)),
+            ],
+          ),
+          if (house.alamatTambahan != null && house.alamatTambahan!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.location_on_outlined, color: Colors.grey, size: 20),
+                const SizedBox(width: 8),
+                Expanded(child: Text(house.alamatTambahan!, style: const TextStyle(fontSize: 16))),
+              ],
+            ),
+          ],
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.edit),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context); // Close bottom sheet
+                    context.push('/edit-house', extra: house); // Navigate to edit
+                  },
+                  label: const Text('Edit', style: TextStyle(fontSize: 16)),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.visibility),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0F4C81),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context); // Close bottom sheet
+                    context.push('/detail-house', extra: house); // Navigate to admin detail
+                  },
+                  label: const Text('Detail', style: TextStyle(fontSize: 16)),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

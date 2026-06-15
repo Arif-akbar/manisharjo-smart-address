@@ -8,6 +8,7 @@ import 'data/auth_repository.dart';
 import 'data/house_repository.dart';
 import 'data/search_provider.dart';
 import 'data/village_map_repository.dart';
+import 'widgets/app_error_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,10 @@ void main() async {
     url: supabaseUrl,
     publishableKey: supabaseAnonKey,
   );
+
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return AppErrorWidget(errorDetails: details);
+  };
 
   runApp(
     MultiProvider(

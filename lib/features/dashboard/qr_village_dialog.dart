@@ -14,12 +14,20 @@ class QrVillageDialog extends StatefulWidget {
 
 class _QrVillageDialogState extends State<QrVillageDialog> {
   late String _villageUrl;
+  late Widget _cachedQrWidget;
 
   @override
   void initState() {
     super.initState();
     // Use the current origin URL for the QR code
     _villageUrl = Uri.base.origin;
+    // Cache the QR Image View so it is only generated once per session
+    _cachedQrWidget = QrImageView(
+      data: _villageUrl,
+      version: QrVersions.auto,
+      size: 200.0,
+      backgroundColor: Colors.white,
+    );
   }
 
   Future<void> _downloadQrCode() async {
@@ -87,12 +95,8 @@ class _QrVillageDialogState extends State<QrVillageDialog> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey.shade300),
             ),
-            child: QrImageView(
-              data: _villageUrl,
-              version: QrVersions.auto,
-              size: 200.0,
-              backgroundColor: Colors.white,
-            ),
+            // Use the cached QR widget here
+            child: _cachedQrWidget,
           ),
           const SizedBox(height: 16),
           Text(
