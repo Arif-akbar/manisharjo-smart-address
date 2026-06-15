@@ -89,7 +89,7 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
         child: Center(
           child: Container(
             constraints: const BoxConstraints(maxWidth: 800),
@@ -99,7 +99,7 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                 // Info Card
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(32.0),
+                    padding: const EdgeInsets.all(24.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -149,25 +149,32 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                             ),
                           ],
                         ),
-                        const Divider(height: 48),
+                        const Divider(height: 32),
                         LayoutBuilder(
                           builder: (context, constraints) {
-                            final bool isSmallScreen = constraints.maxWidth < 400;
-                            return GridView(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: isSmallScreen ? 1 : 2,
-                                crossAxisSpacing: 16,
-                                mainAxisSpacing: 24,
-                                mainAxisExtent: 64,
-                              ),
+                            final bool isSmallScreen = constraints.maxWidth < 450;
+                            final double itemWidth = isSmallScreen ? double.infinity : (constraints.maxWidth - 24) / 2;
+                            return Wrap(
+                              spacing: 24,
+                              runSpacing: 20,
                               children: [
-                                _buildInfoRow(context, Icons.numbers, 'Nomor Rumah', house.nomorRumah),
-                                _buildInfoRow(context, Icons.code, 'Kode Rumah', house.kodeRumah),
-                                _buildInfoRow(context, Icons.map, 'RT / RW', 'RT ${house.rt.toString().padLeft(2, '0')} / RW ${house.rw.toString().padLeft(2, '0')}'),
+                                SizedBox(
+                                  width: itemWidth,
+                                  child: _buildInfoRow(context, Icons.numbers, 'Nomor Rumah', house.nomorRumah),
+                                ),
+                                SizedBox(
+                                  width: itemWidth,
+                                  child: _buildInfoRow(context, Icons.code, 'Kode Rumah', house.kodeRumah),
+                                ),
+                                SizedBox(
+                                  width: itemWidth,
+                                  child: _buildInfoRow(context, Icons.map, 'RT / RW', 'RT ${house.rt.toString().padLeft(2, '0')} / RW ${house.rw.toString().padLeft(2, '0')}'),
+                                ),
                                 if (house.alamatTambahan != null && house.alamatTambahan!.isNotEmpty)
-                                  _buildInfoRow(context, Icons.location_on, 'Alamat Tambahan', house.alamatTambahan!),
+                                  SizedBox(
+                                    width: itemWidth,
+                                    child: _buildInfoRow(context, Icons.location_on, 'Alamat Tambahan', house.alamatTambahan!),
+                                  ),
                               ],
                             );
                           }
@@ -176,13 +183,13 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
                 // Map Card
                 if (house.latitude != null && house.longitude != null)
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -230,7 +237,7 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                             latitude: house.latitude!,
                             longitude: house.longitude!,
                             markerLabel: house.nama,
-                            height: 350,
+                            height: 300,
                           ),
                         ],
                       ),
@@ -265,7 +272,7 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                 // QR Code Actions Card
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: const EdgeInsets.all(20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
