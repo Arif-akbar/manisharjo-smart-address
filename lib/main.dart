@@ -51,6 +51,8 @@ class MyApp extends StatelessWidget {
       title: 'Manisharjo Smart Address',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       routerConfig: router,
     );
   }

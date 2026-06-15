@@ -30,8 +30,6 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Peta Digital Desa'),
-        backgroundColor: const Color(0xFF0F4C81),
-        foregroundColor: Colors.white,
       ),
       body: Consumer<HouseRepository>(
         builder: (context, repo, child) {
@@ -118,11 +116,12 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
                     );
                   }).toList(),
                   builder: (context, markers) {
+                    final theme = Theme.of(context);
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: const Color(0xFF0F4C81),
-                        border: Border.all(color: Colors.white, width: 2),
+                        color: theme.colorScheme.primary,
+                        border: Border.all(color: theme.colorScheme.surface, width: 2),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.2),
@@ -134,7 +133,7 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
                       child: Center(
                         child: Text(
                           markers.length.toString(),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold),
                         ),
                       ),
                     );
@@ -149,11 +148,12 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
   }
 
   Widget _buildHouseInfoCard(BuildContext context, HouseModel house) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -171,14 +171,14 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: house.aktif ? Colors.green.shade100 : Colors.red.shade100,
+                  color: house.aktif ? const Color(0xFF22C55E).withValues(alpha: 0.1) : const Color(0xFFEF4444).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   house.aktif ? 'Aktif' : 'Kosong',
                   style: TextStyle(
-                    color: house.aktif ? Colors.green.shade800 : Colors.red.shade800,
-                    fontWeight: FontWeight.bold,
+                    color: house.aktif ? const Color(0xFF22C55E) : const Color(0xFFEF4444),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -187,12 +187,12 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
           const SizedBox(height: 8),
           Text(
             'Kode: ${house.kodeRumah}',
-            style: const TextStyle(color: Colors.grey, fontSize: 16),
+            style: TextStyle(color: theme.textTheme.bodyMedium?.color, fontSize: 16),
           ),
           const SizedBox(height: 16),
           Row(
             children: [
-              const Icon(Icons.home, color: Colors.grey, size: 20),
+              Icon(Icons.home, color: theme.iconTheme.color, size: 20),
               const SizedBox(width: 8),
               Text('Nomor: ${house.nomorRumah}', style: const TextStyle(fontSize: 16)),
             ],
@@ -200,7 +200,7 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.map, color: Colors.grey, size: 20),
+              Icon(Icons.map, color: theme.iconTheme.color, size: 20),
               const SizedBox(width: 8),
               Text('RT ${house.rt} / RW ${house.rw}', style: const TextStyle(fontSize: 16)),
             ],
@@ -209,7 +209,7 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.location_on_outlined, color: Colors.grey, size: 20),
+                Icon(Icons.location_on_outlined, color: theme.iconTheme.color, size: 20),
                 const SizedBox(width: 8),
                 Expanded(child: Text(house.alamatTambahan!, style: const TextStyle(fontSize: 16))),
               ],
@@ -220,17 +220,11 @@ class _PublicMapScreenState extends State<PublicMapScreen> {
             width: double.infinity,
             child: ElevatedButton.icon(
               icon: const Icon(Icons.visibility),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0F4C81),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
               onPressed: () {
                 Navigator.pop(context); // Close bottom sheet
                 context.push('/house/${house.kodeRumah}'); // Navigate to public detail
               },
-              label: const Text('Lihat Detail Lengkap', style: TextStyle(fontSize: 16)),
+              label: const Text('Lihat Detail Lengkap'),
             ),
           ),
         ],

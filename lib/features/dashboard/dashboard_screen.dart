@@ -65,41 +65,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return SizedBox(
-      width: 220,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: color, size: 28),
+  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.1);
+    final titleColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final valueColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      value,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F4C81)),
-                    ),
-                  ],
-                ),
+              child: Icon(icon, color: color, size: 32),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(color: titleColor, fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: valueColor),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -200,19 +202,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Dashboard Statistik', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: const Color(0xFF0F4C81))),
+                    Text('Dashboard Statistik', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 16,
-                      runSpacing: 16,
-                      alignment: WrapAlignment.start,
-                      children: [
-                        _buildStatCard('Total Rumah', '${houses.length}', Icons.home_work, const Color(0xFF2980B9)),
-                        _buildStatCard('Total RT', '$totalRT', Icons.map, const Color(0xFFE67E22)),
-                        _buildStatCard('Total RW', '$totalRW', Icons.map_outlined, const Color(0xFFD35400)),
-                        _buildStatCard('Rumah Aktif', '${repository.activeHouses}', Icons.check_circle, const Color(0xFF27AE60)),
-                        _buildStatCard('Belum Lengkap', '$belumLengkap', Icons.location_off, const Color(0xFFE74C3C)),
-                      ],
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        int crossAxisCount = 1;
+                        if (constraints.maxWidth >= 1024) crossAxisCount = 4;
+                        else if (constraints.maxWidth >= 600) crossAxisCount = 2;
+                        
+                        return GridView.count(
+                          crossAxisCount: crossAxisCount,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          shrinkWrap: true,
+                          childAspectRatio: constraints.maxWidth >= 1024 ? 2.5 : 2.0,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: [
+                            _buildStatCard(context, 'Total Rumah', '${houses.length}', Icons.home_work, Theme.of(context).colorScheme.primary),
+                            _buildStatCard(context, 'Rumah Aktif', '${repository.activeHouses}', Icons.check_circle, const Color(0xFF22C55E)),
+                            _buildStatCard(context, 'Total RT', '$totalRT', Icons.map, const Color(0xFFF59E0B)),
+                            _buildStatCard(context, 'Total RW', '$totalRW', Icons.map_outlined, const Color(0xFFEF4444)),
+                          ],
+                        );
+                      }
                     ),
                     const SizedBox(height: 24),
                     
@@ -249,14 +261,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     DashboardCharts(houses: houses),
                     const SizedBox(height: 32),
 
-                    Text('Daftar Rumah', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: const Color(0xFF0F4C81))),
+                    Text('Daftar Rumah', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
                     Card(
                       clipBehavior: Clip.antiAlias,
                       child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: DataTable(
-                            headingRowColor: WidgetStateProperty.resolveWith((states) => Colors.grey.shade100),
+                            headingRowColor: WidgetStateProperty.resolveWith((states) => Theme.of(context).colorScheme.surface),
+                            dataRowColor: WidgetStateProperty.resolveWith((states) => Theme.of(context).cardTheme.color),
+                            dividerThickness: 1,
                             columns: const [
                               DataColumn(label: Text('Kode', style: TextStyle(fontWeight: FontWeight.bold))),
                               DataColumn(label: Text('No. Rumah', style: TextStyle(fontWeight: FontWeight.bold))),
@@ -273,21 +287,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   DataCell(Text(house.nama)),
                                   DataCell(Text('${house.rt}/${house.rw}')),
                                   DataCell(
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: house.aktif ? Colors.green.shade100 : Colors.red.shade100,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        house.aktif ? 'Aktif' : 'Tidak Aktif',
-                                        style: TextStyle(
-                                          color: house.aktif ? Colors.green.shade800 : Colors.red.shade800,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: house.aktif ? const Color(0xFF22C55E).withValues(alpha: 0.1) : const Color(0xFFEF4444).withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: Text(
+                                          house.aktif ? 'Aktif' : 'Tidak',
+                                          style: TextStyle(
+                                            color: house.aktif ? const Color(0xFF22C55E) : const Color(0xFFEF4444),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
-                                    ),
                                   ),
                                   DataCell(
                                     Row(

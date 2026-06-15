@@ -46,7 +46,7 @@ class QrHouseHelper {
     }
   }
 
-  static Future<void> printQrSticker(String url, String kodeRumah, String nama) async {
+  static Future<void> printQrSticker(String url, String kodeRumah, String nama, String nomorRumah) async {
     try {
       final qrValidationResult = QrValidator.validate(
         data: url,
@@ -79,45 +79,89 @@ class QrHouseHelper {
                     align-items: center;
                     height: 100vh;
                     margin: 0;
-                    font-family: Arial, sans-serif;
+                    font-family: 'Inter', Arial, sans-serif;
+                    background-color: #f8f9fa;
                   }
                   .sticker {
-                    width: 8cm;
-                    height: 8cm;
-                    border: 2px dashed #ccc;
+                    width: 10cm;
+                    height: 14cm;
+                    border: 2px solid #0F4C81;
+                    border-radius: 16px;
                     padding: 1cm;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    justify-content: center;
+                    justify-content: flex-start;
                     text-align: center;
                     box-sizing: border-box;
+                    background-color: #ffffff;
+                  }
+                  .header {
+                    font-size: 18pt;
+                    font-weight: 800;
+                    color: #0F4C81;
+                    margin-bottom: 0.2cm;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                  }
+                  .sub-header {
+                    font-size: 12pt;
+                    color: #5C6470;
+                    margin-bottom: 1cm;
+                    font-weight: 500;
                   }
                   img {
-                    width: 5cm;
-                    height: 5cm;
-                    margin-bottom: 0.5cm;
+                    width: 7cm;
+                    height: 7cm;
+                    margin-bottom: 1cm;
+                    padding: 0.5cm;
+                    border: 1px dashed #ccc;
+                    border-radius: 8px;
                   }
-                  .title {
+                  .info-container {
+                    width: 100%;
+                    border-top: 1px solid #E4E7EC;
+                    padding-top: 0.8cm;
+                  }
+                  .info-label {
+                    font-size: 10pt;
+                    color: #5C6470;
+                    margin: 0;
+                    text-transform: uppercase;
+                  }
+                  .info-value {
                     font-size: 16pt;
                     font-weight: bold;
-                    margin: 0;
+                    color: #1A1A1A;
+                    margin: 0 0 0.5cm 0;
                   }
-                  .subtitle {
-                    font-size: 12pt;
-                    color: #555;
-                    margin-top: 4px;
+                  .footer {
+                    margin-top: auto;
+                    font-size: 9pt;
+                    color: #A0AABF;
                   }
                   @media print {
-                    .sticker { border: none; }
+                    body { background-color: #ffffff; }
+                    .sticker { border: 2px solid #000; border-radius: 0; }
                   }
                 </style>
               </head>
               <body>
                 <div class="sticker">
-                  <img src="$dataUrl" />
-                  <p class="title">SMART ADDRESS</p>
-                  <p class="subtitle">Rumah $nama ($kodeRumah)</p>
+                  <div class="header">DESA MANISHARJO</div>
+                  <div class="sub-header">SMART ADDRESS SYSTEM</div>
+                  
+                  <img src="$dataUrl" alt="QR Code" />
+                  
+                  <div class="info-container">
+                    <p class="info-label">NAMA WARGA</p>
+                    <p class="info-value">$nama</p>
+                    
+                    <p class="info-label">NOMOR RUMAH</p>
+                    <p class="info-value">$nomorRumah</p>
+                  </div>
+                  
+                  <div class="footer">ID: $kodeRumah</div>
                 </div>
                 <script>
                   window.onload = function() {

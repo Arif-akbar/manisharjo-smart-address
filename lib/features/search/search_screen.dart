@@ -49,7 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   builder: (context, searchProvider, child) {
                     return CustomSearchBar(
                       controller: _searchController,
-                      hintText: 'Masukkan nama warga atau nomor rumah...',
+                      hintText: 'Cari nama warga atau nomor rumah...',
                       onChanged: (query) {
                         final allHouses = Provider.of<HouseRepository>(context, listen: false).houses;
                         searchProvider.search(query, allHouses);

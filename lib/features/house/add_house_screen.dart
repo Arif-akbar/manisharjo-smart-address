@@ -100,8 +100,8 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Informasi Rumah', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: const Color(0xFF0F4C81), fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 24),
+                      Text('Informasi Rumah', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 32),
                       Row(
                         children: [
                           Expanded(
@@ -156,9 +156,9 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'Pilih Lokasi Rumah pada Peta (Wajib)',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       LocationPickerMap(
                         onLocationSelected: (location) {
                           setState(() {
@@ -171,7 +171,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
                             'Koordinat: ${_selectedLocation!.latitude.toStringAsFixed(6)}, ${_selectedLocation!.longitude.toStringAsFixed(6)}',
-                            style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                            style: const TextStyle(color: Color(0xFF22C55E), fontWeight: FontWeight.bold),
                           ),
                         ),
                       const SizedBox(height: 16),
@@ -180,7 +180,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                         subtitle: const Text('Rumah dihuni dan aktif dalam sistem'),
                         value: _aktif,
                         onChanged: (val) => setState(() => _aktif = val),
-                        activeThumbColor: const Color(0xFF0F4C81),
+                        activeColor: const Color(0xFF22C55E),
                       ),
                       const SizedBox(height: 32),
                       SizedBox(
