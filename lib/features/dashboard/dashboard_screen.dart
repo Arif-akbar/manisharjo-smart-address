@@ -221,7 +221,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
                           shrinkWrap: true,
-                          childAspectRatio: constraints.maxWidth >= 1024 ? 2.5 : 2.0,
+                          childAspectRatio: constraints.maxWidth >= 1024 ? 2.5 : (constraints.maxWidth >= 600 ? 2.0 : 3.0),
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
                             _buildStatCard(context, 'Total Rumah', '${houses.length}', Icons.home_work, Theme.of(context).colorScheme.primary),

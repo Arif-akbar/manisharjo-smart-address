@@ -81,7 +81,7 @@ class _LandingScreenState extends State<LandingScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 40,
+                          fontSize: MediaQuery.of(context).size.width < 600 ? 28 : 40,
                           fontWeight: FontWeight.bold,
                           height: 1.2,
                         ),
@@ -112,11 +112,14 @@ class _LandingScreenState extends State<LandingScreen> {
                             children: [
                               Icon(Icons.search, color: Theme.of(context).iconTheme.color),
                               const SizedBox(width: 16),
-                              Text(
-                                'Cari nama warga atau nomor rumah...',
-                                style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 16),
+                              Expanded(
+                                child: Text(
+                                  'Cari nama warga atau nomor rumah...',
+                                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: MediaQuery.of(context).size.width < 600 ? 14 : 16),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              const Spacer(),
+                              const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 decoration: BoxDecoration(
@@ -253,8 +256,9 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   Widget _buildStatCard(BuildContext context, {required String title, required String count, required IconData icon, required MaterialColor color}) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: 300,
+      width: screenWidth < 350 ? screenWidth - 48 : 300,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
