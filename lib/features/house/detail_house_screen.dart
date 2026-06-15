@@ -150,15 +150,28 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                           ],
                         ),
                         const Divider(height: 48),
-                        _buildInfoRow(context, Icons.numbers, 'Nomor Rumah', house.nomorRumah),
-                        const SizedBox(height: 24),
-                        _buildInfoRow(context, Icons.code, 'Kode Rumah', house.kodeRumah),
-                        const SizedBox(height: 24),
-                        _buildInfoRow(context, Icons.map, 'RT / RW', '${house.rt} / ${house.rw}'),
-                        if (house.alamatTambahan != null && house.alamatTambahan!.isNotEmpty) ...[
-                          const SizedBox(height: 24),
-                          _buildInfoRow(context, Icons.location_on, 'Alamat Tambahan', house.alamatTambahan!),
-                        ]
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final bool isSmallScreen = constraints.maxWidth < 400;
+                            return GridView(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: isSmallScreen ? 1 : 2,
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 24,
+                                mainAxisExtent: 64,
+                              ),
+                              children: [
+                                _buildInfoRow(context, Icons.numbers, 'Nomor Rumah', house.nomorRumah),
+                                _buildInfoRow(context, Icons.code, 'Kode Rumah', house.kodeRumah),
+                                _buildInfoRow(context, Icons.map, 'RT / RW', 'RT ${house.rt.toString().padLeft(2, '0')} / RW ${house.rw.toString().padLeft(2, '0')}'),
+                                if (house.alamatTambahan != null && house.alamatTambahan!.isNotEmpty)
+                                  _buildInfoRow(context, Icons.location_on, 'Alamat Tambahan', house.alamatTambahan!),
+                              ],
+                            );
+                          }
+                        ),
                       ],
                     ),
                   ),
@@ -173,10 +186,14 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Wrap(
+                            alignment: WrapAlignment.spaceBetween,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 16,
+                            runSpacing: 16,
                             children: [
                               Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.map_outlined, color: theme.colorScheme.primary),
                                   const SizedBox(width: 8),
@@ -191,6 +208,9 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                               ),
                               ElevatedButton.icon(
                                 onPressed: _isNavigating ? null : _openGoogleMaps,
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                ),
                                 icon: _isNavigating
                                     ? const SizedBox(
                                         width: 16,
@@ -205,7 +225,7 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
                           CustomMapViewer(
                             latitude: house.latitude!,
                             longitude: house.longitude!,

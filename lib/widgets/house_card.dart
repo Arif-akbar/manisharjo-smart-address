@@ -54,15 +54,27 @@ class HouseCard extends StatelessWidget {
     final theme = Theme.of(context);
     
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.home, color: theme.colorScheme.primary),
+              ),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,14 +97,15 @@ class HouseCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Kode: ${house.kodeRumah} • RT ${house.rt} / RW ${house.rw}',
+                      'Kode: ${house.kodeRumah} • RT ${house.rt.padLeft(2, '0')} / RW ${house.rw.padLeft(2, '0')}',
                       style: TextStyle(color: theme.iconTheme.color, fontSize: 13),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: house.aktif ? const Color(0xFF22C55E).withValues(alpha: 0.1) : const Color(0xFFEF4444).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),

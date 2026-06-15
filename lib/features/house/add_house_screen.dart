@@ -51,11 +51,11 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
       final repo = Provider.of<HouseRepository>(context, listen: false);
       final newHouse = HouseModel(
         id: '', // Id is auto generated in DB
-        kodeRumah: _kodeController.text.trim(),
+        kodeRumah: _kodeController.text.trim().toUpperCase(),
         nomorRumah: _nomorController.text.trim(),
         nama: _namaController.text.trim(),
-        rt: _rtController.text.trim(),
-        rw: _rwController.text.trim(),
+        rt: _rtController.text.trim().padLeft(2, '0'),
+        rw: _rwController.text.trim().padLeft(2, '0'),
         alamatTambahan: _alamatController.text.trim(),
         latitude: _selectedLocation!.latitude,
         longitude: _selectedLocation!.longitude,

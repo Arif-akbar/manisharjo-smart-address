@@ -112,47 +112,72 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Data Rumah Manisharjo'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.qr_code_2),
-            tooltip: 'QR Code Desa',
-            onPressed: () {
-              showDialog(context: context, builder: (_) => const QrVillageDialog());
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: 'Cari Warga/Rumah',
-            onPressed: () {
-              context.push('/search');
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Muat Ulang',
-            onPressed: () {
-              Provider.of<HouseRepository>(context, listen: false).fetchHouses();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.map_outlined),
-            tooltip: 'Lihat Peta Digital',
-            onPressed: () {
-              context.push('/admin-map');
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Keluar',
-            onPressed: () async {
-              final authRepo = Provider.of<AuthRepository>(context, listen: false);
-              await authRepo.logout();
-              if (context.mounted) {
-                context.go('/');
-              }
-            },
-          ),
-        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(Icons.dashboard, color: Colors.white, size: 48),
+                  SizedBox(height: 16),
+                  Text('Menu Navigasi', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.qr_code_2),
+              title: const Text('QR Code Desa'),
+              onTap: () {
+                Navigator.pop(context);
+                showDialog(context: context, builder: (_) => const QrVillageDialog());
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.search),
+              title: const Text('Cari Warga/Rumah'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/search');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.refresh),
+              title: const Text('Muat Ulang'),
+              onTap: () {
+                Navigator.pop(context);
+                Provider.of<HouseRepository>(context, listen: false).fetchHouses();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.map_outlined),
+              title: const Text('Lihat Peta Digital'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/admin-map');
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Color(0xFFEF4444)),
+              title: const Text('Keluar', style: TextStyle(color: Color(0xFFEF4444))),
+              onTap: () async {
+                Navigator.pop(context);
+                final authRepo = Provider.of<AuthRepository>(context, listen: false);
+                await authRepo.logout();
+                if (context.mounted) {
+                  context.go('/');
+                }
+              },
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/add-house'),
@@ -291,7 +316,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   DataCell(Text(house.kodeRumah)),
                                   DataCell(Text(house.nomorRumah)),
                                   DataCell(Text(house.nama)),
-                                  DataCell(Text('${house.rt}/${house.rw}')),
+                                  DataCell(Text('${house.rt.padLeft(2, '0')}/${house.rw.padLeft(2, '0')}')),
                                   DataCell(
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
