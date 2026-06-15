@@ -26,6 +26,42 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
   bool _isSaving = false;
 
   @override
+  void initState() {
+    super.initState();
+    _rtController.text = '00';
+    _rwController.text = '00';
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _generateDefaults();
+    });
+  }
+
+  void _generateDefaults() {
+    final repo = Provider.of<HouseRepository>(context, listen: false);
+    final houses = repo.houses;
+
+    if (houses.isNotEmpty) {
+      int maxNomor = 0;
+      for (var house in houses) {
+        // Coba ekstrak angka dari nomor rumah (jika ada karakter non-angka akan diabaikan)
+        final match = RegExp(r'\d+').firstMatch(house.nomorRumah);
+        if (match != null) {
+          final nomor = int.tryParse(match.group(0) ?? '0') ?? 0;
+          if (nomor > maxNomor) {
+            maxNomor = nomor;
+          }
+        }
+      }
+      final nextNomor = maxNomor + 1;
+      _nomorController.text = nextNomor.toString();
+      _kodeController.text = 'RMH-${nextNomor.toString().padLeft(4, '0')}';
+    } else {
+      _nomorController.text = '1';
+      _kodeController.text = 'RMH-0001';
+    }
+  }
+
+  @override
   void dispose() {
     _kodeController.dispose();
     _nomorController.dispose();

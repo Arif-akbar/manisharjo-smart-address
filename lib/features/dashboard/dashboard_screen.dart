@@ -73,33 +73,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: bgColor,
-                borderRadius: BorderRadius.circular(12),
+                shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 32),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(color: titleColor, fontSize: 13, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: valueColor),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 12),
+            Text(
+              value,
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: valueColor),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: titleColor, fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -234,19 +230,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(height: 16),
                     LayoutBuilder(
                       builder: (context, constraints) {
-                        int crossAxisCount = 1;
-                        if (constraints.maxWidth >= 1024) {
-                          crossAxisCount = 4;
-                        } else if (constraints.maxWidth >= 600) {
-                          crossAxisCount = 2;
-                        }
+                        int crossAxisCount = constraints.maxWidth >= 800 ? 4 : 2;
                         
                         return GridView.count(
                           crossAxisCount: crossAxisCount,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
                           shrinkWrap: true,
-                          childAspectRatio: constraints.maxWidth >= 1024 ? 2.5 : (constraints.maxWidth >= 600 ? 2.0 : 3.0),
+                          childAspectRatio: 1.0, // Ensures items are square
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
                             _buildStatCard(context, 'Total Rumah', '${houses.length}', Icons.home_work, Theme.of(context).colorScheme.primary),
