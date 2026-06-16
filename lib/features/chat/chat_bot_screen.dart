@@ -18,9 +18,11 @@ class ChatBotScreen extends StatefulWidget {
   State<ChatBotScreen> createState() => _ChatBotScreenState();
 }
 
-class _ChatBotScreenState extends State<ChatBotScreen> {
+class _ChatBotScreenState extends State<ChatBotScreen> with SingleTickerProviderStateMixin {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  late AnimationController _avatarAnimationController;
+  late Animation<double> _avatarScaleAnimation;
   
   // Data statis untuk preview tampilan
   final List<ChatMessage> _messages = [
@@ -37,6 +39,30 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
       isUser: false
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _avatarAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+
+    _avatarScaleAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
+      CurvedAnimation(
+        parent: _avatarAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    _avatarAnimationController.dispose();
+    super.dispose();
+  }
 
   void _sendMessage() {
     if (_messageController.text.trim().isEmpty) return;
@@ -140,21 +166,41 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
           children: [
             Stack(
               children: [
-                CircleAvatar(
-                  backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
-                  child: Icon(Icons.smart_toy, color: theme.colorScheme.primary),
+                AnimatedBuilder(
+                  animation: _avatarScaleAnimation,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _avatarScaleAnimation.value,
+                      child: CircleAvatar(
+                        backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+                        child: Icon(Icons.smart_toy, color: theme.colorScheme.primary),
+                      ),
+                    );
+                  }
                 ),
                 Positioned(
                   right: 0,
                   bottom: 0,
-                  child: Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
+                  child: AnimatedBuilder(
+                    animation: _avatarScaleAnimation,
+                    builder: (context, child) {
+                      return Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.withOpacity(0.5 * (_avatarScaleAnimation.value - 1.0) * 6),
+                              blurRadius: 4,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
                   ),
                 ),
               ],

@@ -11,13 +11,34 @@ class LandingScreen extends StatefulWidget {
   State<LandingScreen> createState() => _LandingScreenState();
 }
 
-class _LandingScreenState extends State<LandingScreen> {
+class _LandingScreenState extends State<LandingScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _fabAnimationController;
+  late Animation<double> _fabScaleAnimation;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<HouseRepository>(context, listen: false).fetchHouses();
     });
+
+    _fabAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+
+    _fabScaleAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+      CurvedAnimation(
+        parent: _fabAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -311,13 +332,33 @@ class _LandingScreenState extends State<LandingScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/chat-bot'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
-        elevation: 4,
-        icon: const Icon(Icons.smart_toy),
-        label: const Text('Tanya AI', style: TextStyle(fontWeight: FontWeight.bold)),
+      floatingActionButton: AnimatedBuilder(
+        animation: _fabScaleAnimation,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _fabScaleAnimation.value,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.4 * (_fabScaleAnimation.value - 1.0) * 12.5), // glow effect
+                    blurRadius: 15,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: FloatingActionButton.extended(
+                onPressed: () => context.push('/chat-bot'),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
+                elevation: 4,
+                icon: const Icon(Icons.smart_toy),
+                label: const Text('Tanya AI', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          );
+        }
       ),
     );
   }
