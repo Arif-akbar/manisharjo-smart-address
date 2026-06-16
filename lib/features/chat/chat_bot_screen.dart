@@ -88,7 +88,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> with SingleTickerProvider
       if (directApiKey != null && directApiKey.isNotEmpty) {
         // [MODE LOKAL/DEVELOPMENT] Panggil API Gemini langsung jika ada kunci di .env
         final response = await http.post(
-          Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=$directApiKey'),
+          Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$directApiKey'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             "systemInstruction": {
