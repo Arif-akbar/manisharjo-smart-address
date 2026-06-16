@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/auth_repository.dart';
 import '../../data/house_model.dart';
 import '../../widgets/custom_map_viewer.dart';
-import 'qr_house_helper.dart';
 
 class DetailHouseScreen extends StatefulWidget {
   final HouseModel house;
@@ -269,7 +269,7 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                   ),
                 const SizedBox(height: 24),
                 
-                // QR Code Actions Card
+                // Foto Rumah Card
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
@@ -278,10 +278,10 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.qr_code, color: theme.colorScheme.primary),
+                            Icon(Icons.photo_camera, color: theme.colorScheme.primary),
                             const SizedBox(width: 8),
                             Text(
-                              'QR Code Smart Address',
+                              'Foto Rumah',
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary,
@@ -290,37 +290,37 @@ class _DetailHouseScreenState extends State<DetailHouseScreen> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        const Text('Gunakan fitur di bawah ini untuk melihat, mengunduh, atau mencetak stiker QR Code rumah ini.'),
+                        const Text('Gunakan foto di bawah ini untuk memastikan bentuk fisik rumah atau lokasi yang dituju.'),
                         const SizedBox(height: 16),
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 12,
-                          children: [
-                            OutlinedButton.icon(
-                              onPressed: () {
-                                final url = '${Uri.base.origin}/house/${house.kodeRumah}';
-                                QrHouseHelper.showQrDialog(context, url, house.kodeRumah);
-                              },
-                              icon: const Icon(Icons.visibility),
-                              label: const Text('Lihat QR'),
-                            ),
-                            OutlinedButton.icon(
-                              onPressed: () {
-                                final url = '${Uri.base.origin}/house/${house.kodeRumah}';
-                                QrHouseHelper.downloadQr(context, url, house.kodeRumah);
-                              },
-                              icon: const Icon(Icons.download),
-                              label: const Text('Download QR'),
-                            ),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                final url = '${Uri.base.origin}/house/${house.kodeRumah}';
-                                QrHouseHelper.printQrSticker(url, house.kodeRumah, house.nama, house.nomorRumah);
-                              },
-                              icon: const Icon(Icons.print),
-                              label: const Text('Cetak QR'),
-                            ),
-                          ],
+                        Container(
+                          width: double.infinity,
+                          height: 250,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: theme.dividerColor),
+                            image: house.fotoRumah != null && house.fotoRumah!.isNotEmpty
+                                ? DecorationImage(
+                                    image: CachedNetworkImageProvider(house.fotoRumah!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: (house.fotoRumah == null || house.fotoRumah!.isEmpty)
+                              ? Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.image_not_supported, size: 64, color: theme.unselectedWidgetColor),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Belum ada foto rumah yang diunggah.',
+                                        style: TextStyle(color: theme.unselectedWidgetColor, fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : null,
                         ),
                       ],
                     ),

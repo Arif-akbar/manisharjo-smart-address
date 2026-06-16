@@ -144,14 +144,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.refresh),
-              title: const Text('Muat Ulang'),
-              onTap: () {
-                Navigator.pop(context);
-                Provider.of<HouseRepository>(context, listen: false).fetchHouses();
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.map_outlined),
               title: const Text('Lihat Peta Digital'),
               onTap: () {

@@ -7,7 +7,7 @@ class HouseRepository extends ChangeNotifier {
   final String _tableName = 'houses';
   
   // Specific columns to prevent SELECT *
-  final String _selectColumns = 'id, kode_rumah, nomor_rumah, nama, rt, rw, alamat_tambahan, latitude, longitude, aktif, created_at';
+  final String _selectColumns = 'id, kode_rumah, nomor_rumah, nama, rt, rw, alamat_tambahan, foto_rumah, latitude, longitude, aktif, created_at';
 
   List<HouseModel> _houses = [];
   bool _isLoading = false;
@@ -103,6 +103,25 @@ class HouseRepository extends ChangeNotifier {
     } catch (e) {
       _errorMessage = e.toString();
       _setLoading(false);
+      rethrow;
+    }
+  }
+
+  Future<String> uploadHousePhoto(Uint8List imageBytes, String fileName) async {
+    try {
+      final fileExtension = fileName.split('.').last;
+      final uniqueFileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
+      final path = 'house_photos/$uniqueFileName';
+
+      // We'll reuse the 'maps' bucket which is known to be public for images.
+      await _supabase.storage.from('maps').uploadBinary(
+            path,
+            imageBytes,
+            fileOptions: const FileOptions(upsert: true),
+          );
+
+      return _supabase.storage.from('maps').getPublicUrl(path);
+    } catch (e) {
       rethrow;
     }
   }

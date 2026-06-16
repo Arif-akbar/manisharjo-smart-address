@@ -6,6 +6,7 @@ class HouseModel {
   final String rt;
   final String rw;
   final String? alamatTambahan;
+  final String? fotoRumah;
   final double? latitude;
   final double? longitude;
   final bool aktif;
@@ -19,6 +20,7 @@ class HouseModel {
     required this.rt,
     required this.rw,
     this.alamatTambahan,
+    this.fotoRumah,
     this.latitude,
     this.longitude,
     required this.aktif,
@@ -34,6 +36,7 @@ class HouseModel {
       rt: json['rt']?.toString() ?? '',
       rw: json['rw']?.toString() ?? '',
       alamatTambahan: json['alamat_tambahan']?.toString(),
+      fotoRumah: json['foto_rumah']?.toString(),
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
       aktif: json['aktif'] ?? true,
@@ -49,6 +52,7 @@ class HouseModel {
       'rt': rt,
       'rw': rw,
       'alamat_tambahan': alamatTambahan,
+      'foto_rumah': fotoRumah,
       'latitude': latitude,
       'longitude': longitude,
       'aktif': aktif,

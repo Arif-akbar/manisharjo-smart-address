@@ -5,6 +5,8 @@ import '../../data/house_model.dart';
 import '../../data/house_repository.dart';
 import 'package:latlong2/latlong.dart';
 import '../../widgets/location_picker_map.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
 
 class AddHouseScreen extends StatefulWidget {
   const AddHouseScreen({super.key});
@@ -22,6 +24,8 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
   final _rwController = TextEditingController();
   final _alamatController = TextEditingController();
   LatLng? _selectedLocation;
+  Uint8List? _fotoBytes;
+  String? _fotoFileName;
   bool _aktif = true;
   bool _isSaving = false;
 
@@ -72,6 +76,26 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    try {
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        setState(() {
+          _fotoBytes = bytes;
+          _fotoFileName = image.name;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memilih gambar: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     
@@ -85,6 +109,12 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
     setState(() => _isSaving = true);
     try {
       final repo = Provider.of<HouseRepository>(context, listen: false);
+      
+      String? uploadedFotoUrl;
+      if (_fotoBytes != null && _fotoFileName != null) {
+        uploadedFotoUrl = await repo.uploadHousePhoto(_fotoBytes!, _fotoFileName!);
+      }
+
       final newHouse = HouseModel(
         id: '', // Id is auto generated in DB
         kodeRumah: _kodeController.text.trim().toUpperCase(),
@@ -93,6 +123,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
         rt: _rtController.text.trim().padLeft(2, '0'),
         rw: _rwController.text.trim().padLeft(2, '0'),
         alamatTambahan: _alamatController.text.trim(),
+        fotoRumah: uploadedFotoUrl,
         latitude: _selectedLocation!.latitude,
         longitude: _selectedLocation!.longitude,
         aktif: _aktif,
@@ -189,7 +220,50 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                         decoration: const InputDecoration(labelText: 'Alamat Tambahan (Opsional)', prefixIcon: Icon(Icons.location_on)),
                         maxLines: 3,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Foto Rumah (Opsional)',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color),
+                      ),
+                      const SizedBox(height: 12),
+                      InkWell(
+                        onTap: _pickImage,
+                        child: Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                            image: _fotoBytes != null
+                                ? DecorationImage(
+                                    image: MemoryImage(_fotoBytes!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: _fotoBytes == null
+                              ? const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_a_photo, size: 48, color: Colors.grey),
+                                    SizedBox(height: 8),
+                                    Text('Tap untuk memilih foto rumah', style: TextStyle(color: Colors.grey)),
+                                  ],
+                                )
+                              : null,
+                        ),
+                      ),
+                      if (_fotoBytes != null)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            onPressed: () => setState(() => _fotoBytes = null),
+                            icon: const Icon(Icons.delete, color: Colors.red, size: 18),
+                            label: const Text('Hapus Foto', style: TextStyle(color: Colors.red)),
+                          ),
+                        ),
+                      const SizedBox(height: 24),
                       Text(
                         'Pilih Lokasi Rumah pada Peta (Wajib)',
                         style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color),
