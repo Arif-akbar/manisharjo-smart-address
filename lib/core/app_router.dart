@@ -12,6 +12,7 @@ import '../features/public/landing_screen.dart';
 import '../features/map/admin_map_screen.dart';
 import '../features/map/public_map_screen.dart';
 import '../features/house/public_detail_house_screen.dart';
+import '../features/chat/chat_bot_screen.dart';
 import '../data/house_model.dart';
 
 class AppRouter {
@@ -89,6 +90,10 @@ class AppRouter {
             final kode = state.pathParameters['kode'] ?? '';
             return PublicDetailHouseScreen(kodeRumah: kode);
           },
+        ),
+        GoRoute(
+          path: '/chat-bot',
+          builder: (context, state) => const ChatBotScreen(),
         ),
       ],
     );

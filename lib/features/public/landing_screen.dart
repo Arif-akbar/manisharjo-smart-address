@@ -311,6 +311,14 @@ class _LandingScreenState extends State<LandingScreen> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push('/chat-bot'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        icon: const Icon(Icons.smart_toy),
+        label: const Text('Tanya AI', style: TextStyle(fontWeight: FontWeight.bold)),
+      ),
     );
   }
 

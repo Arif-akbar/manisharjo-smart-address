@@ -151,6 +151,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 context.push('/admin-map');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.smart_toy, color: Colors.green),
+              title: const Text('Tanya Asisten AI', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/chat-bot');
+              },
+            ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout, color: Color(0xFFEF4444)),
