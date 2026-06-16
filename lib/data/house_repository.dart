@@ -111,16 +111,16 @@ class HouseRepository extends ChangeNotifier {
     try {
       final fileExtension = fileName.split('.').last;
       final uniqueFileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
-      final path = 'house_photos/$uniqueFileName';
+      final path = uniqueFileName; // Taruh langsung di dalam bucket
 
-      // We'll reuse the 'maps' bucket which is known to be public for images.
-      await _supabase.storage.from('maps').uploadBinary(
+      // Menggunakan bucket khusus 'house_photos'
+      await _supabase.storage.from('house_photos').uploadBinary(
             path,
             imageBytes,
             fileOptions: const FileOptions(upsert: true),
           );
 
-      return _supabase.storage.from('maps').getPublicUrl(path);
+      return _supabase.storage.from('house_photos').getPublicUrl(path);
     } catch (e) {
       rethrow;
     }
