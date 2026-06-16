@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../data/house_repository.dart';
 
 class ChatMessage {
@@ -275,16 +276,33 @@ class _ChatBotScreenState extends State<ChatBotScreen> with SingleTickerProvider
                           ),
                         ],
                       ),
-                      child: Text(
-                        message.text,
-                        style: TextStyle(
-                          color: isUser 
-                              ? Colors.white 
-                              : (isDark ? Colors.white : Colors.black87),
-                          fontSize: 15,
-                          height: 1.4,
-                        ),
-                      ),
+                      child: isUser 
+                        ? Text(
+                            message.text,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              height: 1.4,
+                            ),
+                          )
+                        : MarkdownBody(
+                            data: message.text,
+                            selectable: true,
+                            styleSheet: MarkdownStyleSheet(
+                              p: TextStyle(
+                                color: isDark ? Colors.white : Colors.black87,
+                                fontSize: 15,
+                                height: 1.5,
+                              ),
+                              strong: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              listBullet: TextStyle(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          ),
                     ),
                   );
                 },
