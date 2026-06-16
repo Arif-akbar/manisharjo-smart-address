@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import '../../data/house_repository.dart';
 
 class ChatMessage {
   final String text;
@@ -85,6 +87,17 @@ class _ChatBotScreenState extends State<ChatBotScreen> with SingleTickerProvider
       final String? directApiKey = dotenv.env['GEMINI_API_KEY'];
       String replyText = '';
 
+      // Ambil data rumah dari memori aplikasi (HouseRepository)
+      final houseRepo = Provider.of<HouseRepository>(context, listen: false);
+      final houses = houseRepo.houses;
+      
+      String contextData = "Data rumah kosong.";
+      if (houses.isNotEmpty) {
+        contextData = houses.map((h) => 
+          "- Nama: ${h.nama}, Kode: ${h.kodeRumah}, No: ${h.nomorRumah}, RT/RW: ${h.rt}/${h.rw}, Info: ${h.alamatTambahan ?? '-'}, Koordinat: ${h.latitude},${h.longitude}"
+        ).join('\n');
+      }
+
       if (directApiKey != null && directApiKey.isNotEmpty) {
         // [MODE LOKAL/DEVELOPMENT] Panggil API Gemini langsung jika ada kunci di .env
         final response = await http.post(
@@ -93,7 +106,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> with SingleTickerProvider
           body: jsonEncode({
             "systemInstruction": {
               "parts": [{ 
-                "text": "Anda adalah Asisten Cerdas KHUSUS untuk sistem 'Smart Address Desa Manisharjo'. Tugas Anda HANYA menjawab pertanyaan seputar pencarian rumah, navigasi desa, dan informasi dasar Desa Manisharjo. Jika pengguna menanyakan topik di luar konteks ini (seperti politik, sejarah negara, pemrograman, atau topik umum lainnya yang tidak berhubungan dengan Desa Manisharjo), TOLAKLAH dengan sangat sopan dan katakan bahwa Anda hanya diprogram untuk melayani pertanyaan seputar sistem ini. Jawablah dengan ramah, ringkas, dan selalu menggunakan bahasa Indonesia yang baik." 
+                "text": "Anda adalah Asisten Cerdas KHUSUS untuk sistem 'Smart Address Desa Manisharjo'. Tugas Anda HANYA menjawab pertanyaan seputar pencarian rumah, navigasi desa, dan informasi dasar Desa Manisharjo. Jika pengguna menanyakan topik di luar konteks ini, TOLAKLAH dengan sopan. Jawablah dengan ramah, ringkas, dan berbahasa Indonesia.\n\nBerikut adalah DATA RUMAH AKTIF di Desa Manisharjo saat ini yang HARUS Anda jadikan referensi utama untuk menjawab pertanyaan lokasi warga:\n$contextData\n\nJika pengguna menanyakan seseorang yang tidak ada di data di atas, katakan dengan sopan bahwa data warga tersebut belum terdaftar di sistem Smart Address." 
               }]
             },
             "contents": [{
